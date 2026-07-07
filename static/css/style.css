@@ -66,8 +66,9 @@ body{
     background:white;
 }
 
-.quick-btn{
-    border-radius:15px;
-    height:80px;
+.quick-btn {
+    border-radius: 15px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
 }
-

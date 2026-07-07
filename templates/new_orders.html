@@ -23,9 +23,11 @@
             <div class="col-md-8">
 
                 <input
-                type="text"
-                class="form-control search-box"
-                placeholder="Search product or scan barcode...">
+                    id="barcodeInput"
+                    type="text"
+                    class="form-control search-box"
+                    value="{{ barcode or '' }}"
+                    placeholder="Search product or scan barcode...">
 
             </div>
 

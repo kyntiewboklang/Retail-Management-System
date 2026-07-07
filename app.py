@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -8,7 +8,8 @@ def home():
 
 @app.route("/new-orders")
 def new_orders():
-    return render_template("new_orders.html")
+    barcode = request.args.get("barcode")
+    return render_template("new_orders.html",barcode=barcode)
 
 @app.route("/scanner")
 def scanner():

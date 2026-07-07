@@ -52,73 +52,8 @@
 
 <!-- html5-qrcode -->
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
 
-<script>
-
-const statusBox = document.getElementById("status");
-
-function onScanSuccess(decodedText, decodedResult) {
-
-    statusBox.className = "alert alert-success mt-4 text-center";
-    statusBox.innerHTML = `
-        <strong>Product Found!</strong><br>
-        ${decodedText}<br>
-        Redirecting...
-    `;
-
-    html5QrCode.stop().then(() => {
-
-        setTimeout(() => {
-
-            window.location.href =
-                "/new-orders?barcode=" +
-                encodeURIComponent(decodedText);
-
-        }, 600);
-
-    });
-
-}
-
-function onScanFailure(error) {
-    // Ignore continuous scan errors
-}
-
-const html5QrCode = new Html5Qrcode("reader");
-
-Html5Qrcode.getCameras().then(devices => {
-
-    if (devices && devices.length) {
-
-        html5QrCode.start(
-
-            { facingMode: "environment" },
-
-            {
-                fps: 10,
-                qrbox: {
-                    width: 260,
-                    height: 260
-                }
-            },
-
-            onScanSuccess,
-            onScanFailure
-
-        );
-
-    }
-
-}).catch(err => {
-
-    statusBox.className = "alert alert-danger mt-4";
-
-    statusBox.innerHTML =
-        "Unable to access camera.<br>" + err;
-
-});
-
-</script>
 
 <style>
 

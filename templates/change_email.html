@@ -1,0 +1,92 @@
+{% extends "loginbase.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6 col-md-8">
+
+            <div class="card shadow-lg border-0 mt-5">
+
+                <div class="card-body p-5">
+
+                    <h2 class="text-center fw-bold mb-5">
+                        Change Email
+                    </h2>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+
+                        <div class="mb-4">
+                            <label class="form-label fs-5">
+                                Current Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control form-control-lg"
+                                value="{{ current_email }}"
+                                readonly>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fs-5">
+                                New Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control form-control-lg"
+                                name="new_email"
+                                placeholder="Enter new email"
+                                required>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fs-5">
+                                Confirm New Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control form-control-lg"
+                                name="confirm_email"
+                                placeholder="Confirm new email"
+                                required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg py-3">
+
+                                Update Email
+
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

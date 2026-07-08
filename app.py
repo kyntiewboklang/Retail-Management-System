@@ -6,6 +6,10 @@ app = Flask(__name__)
 def home():
     return render_template("dashboard.html")
 
+@app.route("/add_product")
+def add_product():
+    return render_template("add_product.html")
+
 @app.route("/new-orders")
 def new_orders():
     barcode = request.args.get("barcode")

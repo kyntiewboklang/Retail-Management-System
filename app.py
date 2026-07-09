@@ -24,7 +24,7 @@ def get_db_connection():
         host="localhost",
         database="rmsDB",
         user="postgres",
-        password="1234"
+        password="0000"
     )
     return conn
 

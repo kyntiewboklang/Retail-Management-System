@@ -52,6 +52,8 @@ startBtn.addEventListener("click", async () => {
 
     scannerRunning = true;
 
+    console.log("Starting scanner...");
+
     codeReader.decodeOnceFromVideoDevice(
     selectedDeviceId,
     "reader"

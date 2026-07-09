@@ -2,13 +2,14 @@ from flask import Flask, render_template, redirect, request, session, url_for, f
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import requests
+import os
 
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
 
-app.secret_key = "your_secret_key_here"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
@@ -470,4 +471,4 @@ def lookup_barcode(barcode):
 if __name__ == "__main__":
     create_users_table()
     create_products_table()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -25,6 +25,9 @@ serializer = URLSafeTimedSerializer(app.secret_key)
 def get_db_connection():
     return psycopg2.connect(os.environ["DATABASE_URL"])
 
+create_users_table()
+create_products_table()
+
 def create_users_table():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -463,6 +466,6 @@ def lookup_barcode(barcode):
     return jsonify({"found": False})
 
 if __name__ == "__main__":
-    create_users_table()
-    create_products_table()
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+   

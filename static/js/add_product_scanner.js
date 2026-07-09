@@ -64,26 +64,27 @@ startBtn.addEventListener("click", async () => {
     scannerRunning = true;
 
     codeReader.decodeFromVideoDevice(
-    selectedDeviceId,
-    "reader",
-    (result, err) => {
+        selectedDeviceId,
+        "reader",
+        (result, err) => {
 
-        if (result) {
-            console.log("Detected:", result.getText());
+            if (result) {
+                alert("Detected: " + result.getText());
 
-            barcodeResult.value = result.getText();
-            skuInput.value = result.getText();
+                barcodeResult.value = result.getText();
+                skuInput.value = result.getText();
 
-            lookupProduct(result.getText());
+                lookupProduct(result.getText());
 
-            stopScanner();
+                stopScanner();
+            }
+
+            if (err && !(err instanceof ZXing.NotFoundException)) {
+                console.log(err);
+            }
         }
-
-        if (err && !(err instanceof ZXing.NotFoundException)) {
-            console.error(err);
-        }
-    });
-}); 
+    );
+});
 
 async function lookupProduct(barcode) {
 

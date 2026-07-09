@@ -2,14 +2,13 @@ from flask import Flask, render_template, redirect, request, session, url_for, f
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import requests
-import os
 
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("SECRET_KEY")
+app.secret_key = "your_secret_key_here"
 
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
@@ -23,8 +22,13 @@ mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.secret_key)
 
 def get_db_connection():
-    return psycopg2.connect(os.environ["DATABASE_URL"])
-
+    conn = psycopg2.connect(
+        host="localhost",
+        database="rmsDB",
+        user="postgres",
+        password="0000"
+    )
+    return conn
 
 def create_users_table():
     conn = get_db_connection()
@@ -67,9 +71,6 @@ def create_products_table():
     conn.close()
 
     print("Products table created successfully.")
-
-create_users_table()
-create_products_table()
 
 @app.route("/")
 def home():
@@ -189,27 +190,15 @@ def login():
         cursor.close()
         conn.close()
 
-        print("User found:", user)
-
-    if user:
-        print("Checking password...")
-        password_ok = check_password_hash(user[3], password)
-        print("Password OK:", password_ok)
-
-        if password_ok:
-            print("Password correct")
-
+        if user and check_password_hash(user[3], password):
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["email"] = user[2]
-
-            print("Session created")
 
             return redirect("/admin/dashboard")
 
         print("Login Failed")
         return "Invalid email or password"
-
 
     return render_template("login.html")
 
@@ -479,6 +468,6 @@ def lookup_barcode(barcode):
     return jsonify({"found": False})
 
 if __name__ == "__main__":
+    create_users_table()
+    create_products_table()
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-   

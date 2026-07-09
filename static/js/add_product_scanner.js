@@ -69,7 +69,7 @@ startBtn.addEventListener("click", async () => {
     (result, err) => {
 
         if (result) {
-            console.log("SUCCESS:", result.getText());
+            console.log("Detected:", result.getText());
 
             barcodeResult.value = result.getText();
             skuInput.value = result.getText();
@@ -79,8 +79,8 @@ startBtn.addEventListener("click", async () => {
             stopScanner();
         }
 
-        if (err) {
-            console.log("ERROR:", err.name);
+        if (err && !(err instanceof ZXing.NotFoundException)) {
+            console.error(err);
         }
     });
 }); 

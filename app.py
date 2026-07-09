@@ -28,18 +28,11 @@ def get_db_connection():
     )
     return conn
 
-@app.route("/")
-def home():
-    return redirect("/login")
-
-@app.route("/dashboard")
-def dashboard():
-    return render_template("dashboard.html")
-
-def create_users_table():
+def create_table():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    #Users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id SERIAL PRIMARY KEY,
@@ -49,11 +42,138 @@ def create_users_table():
         )
     """)
 
+    #Product table
+    cursor.execute("""
+       CREATE TABLE IF NOT EXISTS products (
+            id SERIAL PRIMARY KEY,
+            product_name VARCHAR(100) NOT NULL,
+            category VARCHAR(50),
+            brand VARCHAR(50),
+            sku VARCHAR(50) UNIQUE,
+            barcode VARCHAR(50) UNIQUE,
+            price DECIMAL(10,2),
+            quantity INTEGER,
+            supplier VARCHAR(100),
+            expiry_date DATE,
+            manufacture_date DATE,
+            description TEXT,
+            image VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     cursor.close()
     conn.close()
 
-    print("Books table created successfully.")
+    print("Users and Products tables created successfully.")
+
+@app.route("/")
+def home():
+    return redirect("/login")
+
+@app.route("/admin/dashboard")
+def dashboard():
+    return render_template("admin/dashboard.html")
+
+@app.route("/admin/products")
+def products():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM products
+        ORDER BY id DESC
+    """)
+
+    products = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "admin/products.html",
+        products=products
+    )
+
+@app.route("/admin/add_product", methods=["GET", "POST"])
+def add_product():
+
+    if request.method == "POST":
+
+        product_name = request.form["product_name"]
+        category = request.form["category"]
+        brand = request.form["brand"]
+        sku = request.form["sku"]
+        barcode = request.form["barcode"]
+        price = request.form["price"]
+        quantity = request.form["quantity"]
+        supplier = request.form["supplier"]
+        expiry_date = request.form["expiry_date"]
+        manufacture_date = request.form["manufacture_date"]
+        description = request.form["description"]
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO products
+            (product_name, category, brand, sku, barcode,
+            price, quantity,supplier, expiry_date, manufacture_date, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                product_name,
+                category,
+                brand,
+                sku,
+                barcode,
+                price,
+                quantity,
+                supplier,
+                expiry_date,
+                manufacture_date,
+                description
+            ))
+
+        conn.commit()
+        flash("✅ Product added successfully!", "success")
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("products"))
+
+    return render_template("/admin/partials/view_products.html")
+
+@app.route("/admin/partials/view_products")
+def view_products():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id,
+               product_name,
+               category,
+               brand,
+               sku,
+               barcode,
+               price,
+               quantity
+        FROM products
+        ORDER BY id DESC
+    """)
+
+    products = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "/admin/partials/view_products.html",
+        products=products
+    )
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -117,7 +237,7 @@ def login():
             session["username"] = user[1]
             session["email"] = user[2]
 
-            return redirect("/dashboard")
+            return redirect("/admin/dashboard")
 
         print("Login Failed")
         return "Invalid email or password"
@@ -364,17 +484,15 @@ def delete_account():
 
     return redirect("/login")
 
-@app.route("/new-orders")
+@app.route("/admin/new-orders")
 def new_orders():
     barcode = request.args.get("barcode")
-    return render_template("new_orders.html",barcode=barcode)
+    return render_template("admin/new_orders.html",barcode=barcode)
 
-@app.route("/scanner")
+@app.route("/admin/scanner")
 def scanner():
-    return render_template("scanner.html")
+    return render_template("admin/scanner.html")
 
 if __name__ == "__main__":
-    create_users_table()
+    create_table()
     app.run(debug=True)
-#app.py is the main file and its like the brain
-#app.py it will create a website name app and then it will start the server becuz of flask and it will give the https address sql

@@ -1,6 +1,17 @@
 console.log("ZXing Scanner Loaded");
 
-const codeReader = new ZXing.BrowserMultiFormatReader();
+const hints = new Map();
+
+hints.set(
+    ZXing.DecodeHintType.POSSIBLE_FORMATS,
+    [
+        ZXing.BarcodeFormat.EAN_13,
+        ZXing.BarcodeFormat.UPC_A,
+        ZXing.BarcodeFormat.CODE_128
+    ]
+);
+
+const codeReader = new ZXing.BrowserMultiFormatReader(hints);
 
 let selectedDeviceId = null;
 let scannerRunning = false;
@@ -52,8 +63,6 @@ startBtn.addEventListener("click", async () => {
 
     scannerRunning = true;
 
-    console.log("Starting scanner...");
-
     codeReader.decodeFromVideoDevice(
     selectedDeviceId,
     "reader",
@@ -61,14 +70,20 @@ startBtn.addEventListener("click", async () => {
 
         if (result) {
             console.log("SUCCESS:", result.getText());
+
+            barcodeResult.value = result.getText();
+            skuInput.value = result.getText();
+
+            lookupProduct(result.getText());
+
+            stopScanner();
         }
 
         if (err) {
-            console.log(err);
+            console.log("ERROR:", err.name);
         }
     });
-
-});
+}); 
 
 async function lookupProduct(barcode) {
 

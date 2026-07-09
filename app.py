@@ -172,44 +172,27 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
 
-        print("Email:", email)
-        print("Password:", password)
-
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             SELECT * FROM users
-            WHERE email=%s
+            WHERE email = %s
         """, (email,))
-        user = cursor.fetchone()
 
-        print("User found:", user)
+        user = cursor.fetchone()
 
         cursor.close()
         conn.close()
 
-        print("User found:", user)
-
-    if user:
-        print("Checking password...")
-        password_ok = check_password_hash(user[3], password)
-        print("Password OK:", password_ok)
-
-        if password_ok:
-            print("Password correct")
-
+        if user and check_password_hash(user[3], password):
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["email"] = user[2]
 
-            print("Session created")
-
             return redirect("/admin/dashboard")
 
-        print("Login Failed")
-        return "Invalid email or password"
-
+        flash("Invalid email or password", "danger")
 
     return render_template("login.html")
 

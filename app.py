@@ -14,8 +14,8 @@ app.secret_key = os.environ.get("SECRET_KEY")
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "phangkykurkalang12@gmail.com"
-app.config["MAIL_PASSWORD"] = "qlww wrfi mssl iiyn"
+app.config["MAIL_USERNAME"] = os.environ.get("phangkykurkalang12@gmail.com")
+app.config["MAIL_PASSWORD"] = os.environ.get("qlww wrfi mssl iiyn")
 app.config["MAIL_DEFAULT_SENDER"] = "phangkykurkalang12@gmail.com"
 
 mail = Mail(app)
@@ -479,6 +479,6 @@ def lookup_barcode(barcode):
     return jsonify({"found": False})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)
 
    

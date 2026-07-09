@@ -54,18 +54,18 @@ startBtn.addEventListener("click", async () => {
 
     console.log("Starting scanner...");
 
-    codeReader.decodeOnceFromVideoDevice(
+    codeReader.decodeFromVideoDevice(
     selectedDeviceId,
-    "reader"
-    ).then(result => {
+    "reader",
+    (result, err) => {
 
-        console.log(result.getText());
+        if (result) {
+            console.log("SUCCESS:", result.getText());
+        }
 
-        barcodeResult.value = result.getText();
-        skuInput.value = result.getText();
-
-    }).catch(err => {
-        console.error(err);
+        if (err) {
+            console.log(err);
+        }
     });
 
 });

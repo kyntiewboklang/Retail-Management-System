@@ -28,14 +28,6 @@ def get_db_connection():
     )
     return conn
 
-@app.route("/")
-def home():
-    return redirect("/login")
-
-@app.route("/dashboard")
-def dashboard():
-    return render_template("dashboard.html")
-
 def create_users_table():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -54,6 +46,20 @@ def create_users_table():
     conn.close()
 
     print("Books table created successfully.")
+
+@app.route("/")
+def home():
+    return redirect("/login")
+
+@app.route("/admin/dashboard")
+def dashboard():
+    return render_template("admin/dashboard.html")
+
+
+@app.route("/admin/add_product")
+def add_product():
+    return render_template("admin/add_product.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -117,7 +123,7 @@ def login():
             session["username"] = user[1]
             session["email"] = user[2]
 
-            return redirect("/dashboard")
+            return redirect("/admin/dashboard")
 
         print("Login Failed")
         return "Invalid email or password"
@@ -364,17 +370,15 @@ def delete_account():
 
     return redirect("/login")
 
-@app.route("/new-orders")
+@app.route("/admin/new-orders")
 def new_orders():
     barcode = request.args.get("barcode")
-    return render_template("new_orders.html",barcode=barcode)
+    return render_template("admin/new_orders.html",barcode=barcode)
 
-@app.route("/scanner")
+@app.route("/admin/scanner")
 def scanner():
-    return render_template("scanner.html")
+    return render_template("admin/scanner.html")
 
 if __name__ == "__main__":
     create_users_table()
     app.run(debug=True)
-#app.py is the main file and its like the brain
-#app.py it will create a website name app and then it will start the server becuz of flask and it will give the https address sql

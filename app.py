@@ -67,7 +67,7 @@ def create_products_table():
     conn.close()
 
     print("Products table created successfully.")
-    
+
 create_users_table()
 create_products_table()
 
@@ -189,15 +189,27 @@ def login():
         cursor.close()
         conn.close()
 
-        if user and check_password_hash(user[3], password):
+        print("User found:", user)
+
+    if user:
+        print("Checking password...")
+        password_ok = check_password_hash(user[3], password)
+        print("Password OK:", password_ok)
+
+        if password_ok:
+            print("Password correct")
+
             session["user_id"] = user[0]
             session["username"] = user[1]
             session["email"] = user[2]
+
+            print("Session created")
 
             return redirect("/admin/dashboard")
 
         print("Login Failed")
         return "Invalid email or password"
+
 
     return render_template("login.html")
 

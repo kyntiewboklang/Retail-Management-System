@@ -1,6 +1,8 @@
-from flask import Flask, render_template, redirect, request, session, url_for, flash
+from flask import Flask, render_template, redirect, request, session, url_for, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
+import requests
+
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
@@ -378,6 +380,22 @@ def new_orders():
 @app.route("/admin/scanner")
 def scanner():
     return render_template("admin/scanner.html")
+
+@app.route("/lookup-barcode/<barcode>")
+def lookup_barcode(barcode):
+
+    product = search_product(barcode)
+
+    if product:
+        return jsonify({
+            "found": True,
+            "product_name": product["title"],
+            "brand": product["brand"],
+            "description": product["description"],
+            "category": product["category"]
+        })
+
+    return jsonify({"found": False})
 
 if __name__ == "__main__":
     create_users_table()

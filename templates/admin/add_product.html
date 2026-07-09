@@ -2,7 +2,9 @@
 {% block content %}
 
 <div class="container py-5">
-    <div class="row justify-content-center">
+    <div class="row">
+
+        <!-- Product Form -->
         <div class="col-lg-8">
 
             <div class="card shadow border-0">
@@ -15,39 +17,36 @@
                     <form action="/add-product" method="POST">
 
                         <div class="mb-3">
-                            <label for="product_name" class="form-label">Product Name</label>
+                            <label class="form-label">Product Name</label>
                             <input
                                 type="text"
-                                class="form-control"
                                 id="product_name"
+                                class="form-control"
                                 name="product_name"
-                                placeholder="Enter product name"
                                 required>
                         </div>
 
                         <div class="row">
 
                             <div class="col-md-6 mb-3">
-                                <label for="category" class="form-label">Category</label>
-                                <select class="form-select" id="category" name="category" required>
-                                    <option selected disabled>Select Category</option>
-                                    <option>Electronics</option>
-                                    <option>Groceries</option>
-                                    <option>Clothing</option>
-                                    <option>Home & Kitchen</option>
-                                    <option>Beauty</option>
-                                    <option>Sports</option>
+                                <label class="form-label">Category</label>
+                                <select id="category" class="form-select" name="category" required>
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Clothing">Clothing</option>
+                                    <option value="Home & Kitchen">Home & Kitchen</option>
+                                    <option value="Beauty">Beauty</option>
+                                    <option value="Sports">Sports</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="brand" class="form-label">Brand</label>
+                                <label class="form-label">Brand</label>
                                 <input
                                     type="text"
-                                    class="form-control"
                                     id="brand"
-                                    name="brand"
-                                    placeholder="Brand Name">
+                                    class="form-control"
+                                    name="brand">
                             </div>
 
                         </div>
@@ -55,66 +54,63 @@
                         <div class="row">
 
                             <div class="col-md-4 mb-3">
-                                <label for="price" class="form-label">Price ($)</label>
+                                <label class="form-label">Price ($)</label>
                                 <input
                                     type="number"
                                     step="0.01"
                                     class="form-control"
-                                    id="price"
                                     name="price"
                                     required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label for="quantity" class="form-label">Quantity</label>
+                                <label class="form-label">Quantity</label>
                                 <input
                                     type="number"
                                     class="form-control"
-                                    id="quantity"
                                     name="quantity"
                                     required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label for="sku" class="form-label">SKU</label>
+                                <label class="form-label">SKU / Barcode</label>
                                 <input
                                     type="text"
                                     class="form-control"
                                     id="sku"
                                     name="sku"
-                                    placeholder="SKU001">
+                                    placeholder="Scan or enter barcode">
                             </div>
 
                         </div>
 
                         <div class="mb-3">
-                            <label for="supplier" class="form-label">Supplier</label>
+                            <label class="form-label">Supplier</label>
                             <input
                                 type="text"
                                 class="form-control"
-                                id="supplier"
-                                name="supplier"
-                                placeholder="Supplier Name">
+                                name="supplier">
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">Product Description</label>
+                            <label class="form-label">Description</label>
                             <textarea
-                                class="form-control"
                                 id="description"
-                                name="description"
+                                class="form-control"
                                 rows="4"
-                                placeholder="Enter product description"></textarea>
+                                name="description"></textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">
+
                             <a href="/products" class="btn btn-secondary">
                                 Cancel
                             </a>
 
-                            <button type="submit" class="btn btn-success">
+                            <button class="btn btn-success">
                                 Save Product
                             </button>
+
                         </div>
 
                     </form>
@@ -123,6 +119,72 @@
             </div>
 
         </div>
+
+        <!-- Scanner Panel -->
+        <div class="col-lg-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">📷 Barcode Scanner</h5>
+                </div>
+
+                <div class="card-body text-center">
+
+                    <!-- Camera Preview -->
+                    <video
+                        id="reader"
+                        style="
+                            width:100%;
+                            height:250px;
+                            border-radius:10px;
+                            object-fit:cover;
+                        ">
+                    </video>
+
+                    <div class="d-grid gap-2 mt-3">
+
+                        <button
+                            class="btn btn-primary"
+                            id="startCamera"
+                            type="button">
+                            📷 Use Camera
+                        </button>
+
+                        <button
+                            class="btn btn-danger"
+                            id="stopCamera"
+                            type="button">
+                            ⏹ Stop Camera
+                        </button>
+
+                    </div>
+
+                    <hr>
+
+                    <h6>Last Scanned Barcode</h6>
+
+                    <input
+                        type="text"
+                        id="barcodeResult"
+                        class="form-control text-center"
+                        placeholder="Waiting for scan..."
+                        readonly>
+
+                    <small class="text-muted">
+                        Camera or USB scanner will automatically fill the SKU field.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 </div>
+
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script src="{{ url_for('static', filename='js/add_product_scanner.js') }}"></script>
 {% endblock %}

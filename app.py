@@ -49,6 +49,29 @@ def create_users_table():
 
     print("Books table created successfully.")
 
+def create_products_table():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS products(
+            id SERIAL PRIMARY KEY,
+            product_name VARCHAR(255) NOT NULL,
+            category VARCHAR(100),
+            brand VARCHAR(100),
+            price NUMERIC(10,2),
+            quantity INTEGER,
+            sku VARCHAR(100) UNIQUE,
+            supplier VARCHAR(255),
+            description TEXT
+                   )
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    print("Products table created successfully.")
+
 @app.route("/")
 def home():
     return redirect("/login")
@@ -58,8 +81,55 @@ def dashboard():
     return render_template("admin/dashboard.html")
 
 
-@app.route("/admin/add_product")
+@app.route("/admin/add_product", methods=["GET", "POST"])
 def add_product():
+    if request.method =="POST":
+        product_name = request.form["product_name"]
+        category = request.form["category"]
+        brand = request.form["brand"]
+        price = request.form["price"]
+        quantity = request.form["quantity"]
+        sku = request.form["sku"]
+        supplier = request.form["supplier"]
+        description = request.form["description"]
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO products
+            (
+                product_name,
+                category,
+                brand,
+                price,
+                quantity,
+                sku,
+                supplier,
+                description
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """,
+        (
+            product_name,
+            category,
+            brand,
+            price,
+            quantity,
+            sku,
+            supplier,
+            description
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Product added successfully!", "success")
+
+        return redirect(url_for("add_product"))
+
     return render_template("admin/add_product.html")
 
 
@@ -399,4 +469,5 @@ def lookup_barcode(barcode):
 
 if __name__ == "__main__":
     create_users_table()
+    create_products_table()
     app.run(debug=True)

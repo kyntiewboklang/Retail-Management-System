@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h3>Product Management</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <button
+                id="btnAdd"
+                class="btn btn-success me-2"
+                onclick="showAddProduct()">
+
+                <i class="bi bi-plus-circle"></i>
+                Add Product
+
+            </button>
+
+            <button
+                id="btnView"
+                class="btn btn-outline-primary"
+                onclick="showViewProducts()">
+
+                <i class="bi bi-table"></i>
+                View Products
+
+            </button>
+
+            <hr>
+
+            <div id="add-product">
+
+                {% include "admin/partials/add_product.html" %}
+
+            </div>
+
+            <div id="view-products" style="display:none;">
+
+                {% include "admin/partials/view_products.html" %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+<script>
+setTimeout(function () {
+    let alerts = document.querySelectorAll(".alert");
+    alerts.forEach(function(alert) {
+        alert.classList.remove("show");
+        alert.classList.add("fade");
+        setTimeout(() => alert.remove(), 500);
+    });
+}, 3000);
+</script>
+
+{% endblock %}

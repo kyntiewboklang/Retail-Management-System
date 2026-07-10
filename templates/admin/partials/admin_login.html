@@ -1,0 +1,79 @@
+<h1 class="text-center mb-4">Admin Login</h1>
+
+<form method="POST" action="{{ url_for('admin_login') }}">
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+
+        <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Enter your email"
+            required>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">Password</label>
+
+        <div class="password-wrapper">
+
+            <input
+                type="password"
+                id="adminPassword"
+                name="password"
+                class="form-control"
+                placeholder="Enter your password"
+                required>
+
+            <i class="bi bi-eye-slash" id="toggleAdminPassword"></i>
+
+        </div>
+
+    </div>
+
+    <div class="text-end mb-3">
+
+        <a href="{{ url_for('forgot_password') }}" class="forgot-link">
+            Forgot Password?
+        </a>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+        Login
+    </button>
+
+</form>
+
+<script>
+
+const toggleAdminPassword =
+document.getElementById("toggleAdminPassword");
+
+const adminPassword =
+document.getElementById("adminPassword");
+
+toggleAdminPassword.addEventListener("click", function(){
+
+    if(adminPassword.type === "password"){
+
+        adminPassword.type = "text";
+
+        this.classList.remove("bi-eye-slash");
+        this.classList.add("bi-eye");
+
+    }else{
+
+        adminPassword.type = "password";
+
+        this.classList.remove("bi-eye");
+        this.classList.add("bi-eye-slash");
+
+    }
+
+});
+
+</script>

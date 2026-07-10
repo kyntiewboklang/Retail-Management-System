@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header">
+
+            <h3>Staff Management</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <button
+                id="btnAdd"
+                class="btn btn-success me-2"
+                onclick="showAddStaff()">
+
+                <i class="bi bi-person-plus"></i>
+                Add Staff
+
+            </button>
+
+            <button
+                id="btnView"
+                class="btn btn-outline-primary"
+                onclick="showViewStaff()">
+
+                <i class="bi bi-people"></i>
+                View Staff
+
+            </button>
+
+            <hr>
+
+            <div id="add-staff">
+
+                {% include "admin/partials/add_staff.html" %}
+
+            </div>
+
+            <div id="view-staff" style="display:none;">
+
+                {% include "admin/partials/view_staff.html" %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function showAddStaff(){
+
+    document.getElementById("add-staff").style.display="block";
+    document.getElementById("view-staff").style.display="none";
+
+}
+
+function showViewStaff(){
+
+    document.getElementById("add-staff").style.display="none";
+    document.getElementById("view-staff").style.display="block";
+
+}
+
+</script>
+
+{% endblock %}

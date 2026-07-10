@@ -132,6 +132,45 @@ def add_product():
 
     return render_template("admin/add_product.html")
 
+@app.route("/admin/available_stock")
+def available_stock():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM products
+        ORDER BY product_name
+    """)
+
+    stocks = cursor.fetchall()
+
+    total_products = len(stocks)
+
+    total_stock = sum(row[5] for row in stocks)
+
+    low_stock = sum(
+        1 for row in stocks
+        if row[5] > 0 and row[5] <= 10
+    )
+
+    out_stock = sum(
+        1 for row in stocks
+        if row[5] == 0
+    )
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "admin/available_stocks.html",
+        stocks=stocks,
+        total_products=total_products,
+        total_stock=total_stock,
+        low_stock=low_stock,
+        out_stock=out_stock
+    )
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

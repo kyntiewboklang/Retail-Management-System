@@ -70,11 +70,72 @@ def create_table():
 
 @app.route("/")
 def home():
-    return redirect("/login")
+
+    return render_template(
+        "index.html",
+        admin_exists=admin_exists()
+    )
+def admin_exists():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM users
+        WHERE role = 'admin'
+    """)
+
+    count = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    return count > 0
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        print("Email:", email)
+        print("Password:", password)
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT * FROM users
+            WHERE email=%s
+        """, (email,))
+        user = cursor.fetchone()
+
+        print("User found:", user)
+
+        cursor.close()
+        conn.close()
+
+        if user and check_password_hash(user[3], password):
+            session["user_id"] = user[0]
+            session["username"] = user[1]
+            session["email"] = user[2]
+
+            return redirect("/admin/dashboard")
+
+        print("Login Failed")
+        return "Invalid email or password"
+    return render_template("index.html")
 
 @app.route("/admin/dashboard")
 def dashboard():
     return render_template("admin/dashboard.html")
+
+@app.route("/admin/staff")
+def staff():
+    return render_template("admin/staff.html")
 
 @app.route("/admin/products")
 def products():
@@ -175,8 +236,20 @@ def view_products():
         products=products
     )
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/admin/new-orders")
+def new_orders():
+    barcode = request.args.get("barcode")
+    return render_template("/admin/new_orders.html",barcode=barcode)
+
+@app.route("/admin/scanner")
+def scanner():
+    return render_template("/admin/scanner.html")
+
+@app.route("/admin/register", methods=["GET", "POST"])
 def register():
+
+    if admin_exists():
+        return redirect(url_for("home"))
 
     if request.method == "POST":
 
@@ -186,7 +259,7 @@ def register():
         confirm_password = request.form["confirm_password"]
 
         if password != confirm_password:
-            return "Passwords do not match!"
+            return "Passwords do not match."
 
         hashed_password = generate_password_hash(password)
 
@@ -194,21 +267,28 @@ def register():
         cursor = conn.cursor()
 
         cursor.execute("""
-            INSERT INTO users(username, email, password)
-            VALUES (%s, %s, %s)
-        """, (username, email, hashed_password))
+            INSERT INTO users
+            (username, email, password, role)
+            VALUES (%s, %s, %s, %s)
+        """,
+        (
+            username,
+            email,
+            hashed_password,
+            "admin"
+        ))
 
         conn.commit()
 
         cursor.close()
         conn.close()
 
-        return redirect("/login")
+        return redirect(url_for("home"))
 
-    return render_template("register.html")
+    return render_template("admin/register.html")
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
+@app.route("/staff/login", methods=["GET", "POST"])
+def staff_login():
 
     if request.method == "POST":
 
@@ -237,17 +317,22 @@ def login():
             session["username"] = user[1]
             session["email"] = user[2]
 
-            return redirect("/admin/dashboard")
+            return redirect("/staff/staff_dashboard")
 
         print("Login Failed")
         return "Invalid email or password"
+    return render_template("staff/partials/staff_login.html")
 
-    return render_template("login.html")
+@app.route("/staff/staff_dashboard")
+def staff_dashboard():
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
+    if "user_id" not in session:
+        return redirect(url_for("home"))
+
+    if session.get("role") != "staff":
+        return redirect(url_for("home"))
+
+    return render_template("staff/staff_dashboard.html")
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -272,7 +357,7 @@ def forgot_password():
             reset_link = f"http://127.0.0.1:5000/reset-password/{token}"
 
             msg = Message(
-                subject = "BookNest Password Reset",
+                subject = "RMS Password Reset",
                 recipients=[email]
             )
 
@@ -289,7 +374,7 @@ def forgot_password():
 
         If you did not request this, simply ignore this email.
 
-        BookNest Team
+        RMS Team
             """
 
             mail.send(msg)
@@ -328,170 +413,6 @@ def reset_password(token):
         return redirect("/login")
 
     return render_template("reset_password.html", token=token)
-
-@app.route("/change-password", methods=["GET", "POST"])
-def change_password():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
-    if request.method == "POST":
-
-        current_password = request.form["current_password"]
-        new_password = request.form["new_password"]
-        confirm_password = request.form["confirm_password"]
-
-        if new_password != confirm_password:
-            flash("New passwords do not match.", "danger")
-            return redirect(url_for("change_password"))
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        # Get the current hashed password
-        cursor.execute(
-            "SELECT password FROM users WHERE id = %s",
-            (session["user_id"],)
-        )
-
-        user = cursor.fetchone()
-
-        if not user:
-            cursor.close()
-            conn.close()
-            flash("User not found.", "danger")
-            return redirect(url_for("login"))
-
-        # Verify current password
-        if not check_password_hash(user[0], current_password):
-            cursor.close()
-            conn.close()
-            flash("Current password is incorrect.", "danger")
-            return redirect(url_for("change_password"))
-
-        # Hash the new password
-        hashed_password = generate_password_hash(new_password)
-
-        # Update password
-        cursor.execute(
-            "UPDATE users SET password = %s WHERE id = %s",
-            (hashed_password, session["user_id"])
-        )
-
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        flash("Password updated successfully!", "success")
-
-        return redirect(url_for("dashboard"))
-
-    return render_template("change_password.html")
-
-@app.route("/change-email", methods=["GET", "POST"])
-def change_email():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT email FROM users WHERE id = %s",
-        (session["user_id"],)
-    )
-
-    current_email = cursor.fetchone()[0]
-
-    if request.method == "POST":
-
-        new_email = request.form["new_email"]
-        confirm_email = request.form["confirm_email"]
-
-        if new_email != confirm_email:
-            flash("Email addresses do not match.", "danger")
-            cursor.close()
-            conn.close()
-            return render_template(
-                "change_email.html",
-                current_email=current_email
-            )
-
-        cursor.execute(
-            "SELECT id FROM users WHERE email = %s",
-            (new_email,)
-        )
-
-        existing_user = cursor.fetchone()
-
-        if existing_user:
-            flash("This email is already registered.", "danger")
-            cursor.close()
-            conn.close()
-            return render_template(
-                "change_email.html",
-                current_email=current_email
-            )
-
-        cursor.execute(
-            "UPDATE users SET email = %s WHERE id = %s",
-            (new_email, session["user_id"])
-        )
-
-        conn.commit()
-
-        session["email"] = new_email
-
-        flash("Email updated successfully!", "success")
-
-        cursor.close()
-        conn.close()
-
-        return redirect(url_for("dashboard"))
-
-    cursor.close()
-    conn.close()
-
-    return render_template(
-        "change_email.html",
-        current_email=current_email
-    )
-
-@app.route("/delete-account", methods=["GET", "POST"])
-def delete_account():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "DELETE FROM users WHERE id = %s",
-        (session["user_id"],)
-    )
-
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-    session.clear()
-
-    flash("Your account has been deleted successfully.", "success")
-
-    return redirect("/login")
-
-@app.route("/admin/new-orders")
-def new_orders():
-    barcode = request.args.get("barcode")
-    return render_template("admin/new_orders.html",barcode=barcode)
-
-@app.route("/admin/scanner")
-def scanner():
-    return render_template("admin/scanner.html")
 
 if __name__ == "__main__":
     create_table()

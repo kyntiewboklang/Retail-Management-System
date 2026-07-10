@@ -1,4 +1,4 @@
-console.log("ZXing Scanner Loaded");
+console.log("Scanner JS Loaded");
 
 const codeReader = new ZXing.BrowserMultiFormatReader();
 
@@ -11,6 +11,9 @@ const stopBtn = document.getElementById("stopCamera");
 const barcodeResult = document.getElementById("barcodeResult");
 const skuInput = document.getElementById("sku");
 
+// -------------------------
+// Load Camera
+// -------------------------
 async function loadCameras() {
 
     try {
@@ -37,11 +40,80 @@ async function loadCameras() {
     } catch (err) {
 
         console.error(err);
-        alert("Unable to access the camera.");
+        alert("Unable to access camera.");
+
         return false;
     }
 }
 
+// -------------------------
+// Lookup Product
+// -------------------------
+async function lookupProduct(barcode) {
+
+    try {
+
+        console.log("Searching:", barcode);
+
+        const response = await fetch(`/api/search_product/${barcode}`);
+
+        const data = await response.json();
+
+        console.log(data);
+
+        if (!data.found) {
+
+            alert("Product not found.\nPlease enter details manually.");
+
+            return;
+        }
+
+        document.getElementById("product_name").value =
+            data.product_name || "";
+
+        document.getElementById("brand").value =
+            data.brand || "";
+
+        document.getElementById("price").value =
+            data.price || "";
+
+        document.getElementById("quantity").value =
+            data.quantity || "";
+
+        document.getElementById("supplier").value =
+            data.supplier || "";
+
+        document.getElementById("description").value =
+            data.description || "";
+
+        // Match category if possible
+        const category = document.getElementById("category");
+
+        for (const option of category.options) {
+
+            if (
+                data.category &&
+                data.category.toLowerCase().includes(option.text.toLowerCase())
+            ) {
+                category.value = option.value;
+                break;
+            }
+
+        }
+
+        console.log("Product loaded successfully.");
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+// -------------------------
+// Start Scanner
+// -------------------------
 startBtn.addEventListener("click", async () => {
 
     if (scannerRunning) return;
@@ -55,70 +127,48 @@ startBtn.addEventListener("click", async () => {
     console.log("Starting scanner...");
 
     codeReader.decodeOnceFromVideoDevice(
-    selectedDeviceId,
-    "reader"
-    ).then(result => {
+        selectedDeviceId,
+        "reader"
+    )
+    .then(result => {
 
-        console.log(result.getText());
+    const barcode = result.getText();
 
-        barcodeResult.value = result.getText();
-        skuInput.value = result.getText();
+    console.log("Scanned:", barcode);
 
-    }).catch(err => {
+    barcodeResult.value = barcode;
+    skuInput.value = barcode;
+
+    lookupProduct(barcode);
+
+    })
+    
+    .catch(err => {
+
         console.error(err);
+
     });
 
 });
 
-async function lookupProduct(barcode) {
+// -------------------------
+// Manual Barcode Entry
+// -------------------------
+skuInput.addEventListener("change", function () {
 
-    try {
+    const barcode = skuInput.value.trim();
 
-        const response = await fetch(`/lookup-barcode/${barcode}`);
+    if (barcode !== "") {
 
-        const data = await response.json();
-
-        console.log(data);
-
-        if (!data.found) {
-
-            alert("Product not found.");
-
-            return;
-
-        }
-
-        document.getElementById("product_name").value =
-            data.product_name || "";
-
-        document.getElementById("brand").value =
-            data.brand || "";
-
-        document.getElementById("description").value =
-            data.description || "";
-
-        const category = document.getElementById("category");
-
-        for (const option of category.options) {
-
-            if (
-                data.category &&
-                data.category.toLowerCase().includes(option.text.toLowerCase())
-            ) {
-
-                category.value = option.value;
-                break;
-            }
-        }
-
-    } catch (err) {
-
-        console.error(err);
+        lookupProduct(barcode);
 
     }
 
-}
+});
 
+// -------------------------
+// Stop Scanner
+// -------------------------
 function stopScanner() {
 
     if (!scannerRunning) return;
@@ -126,6 +176,7 @@ function stopScanner() {
     codeReader.reset();
 
     scannerRunning = false;
+
 }
 
 stopBtn.addEventListener("click", stopScanner);

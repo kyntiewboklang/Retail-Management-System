@@ -1,250 +1,287 @@
 {% extends "admin/base.html" %}
 {% block content %}
 
-<div class="container py-4">
+<div class="container-fluid py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="row g-4">
 
-    <h2>
-    <i class="bi bi-cart-check">New Order</i>
-    </h2>
-
-    <a href="/admin/scanner" class="btn btn-dark">
-        <i class="bi bi-upc-scan">Scan Product</i>
-        
-    </a>
-
-    </div>
-
-    <div class="card p-4 mb-4">
-
-        <div class="row">
-
-            <div class="col-md-8">
-
-                <input
-                    id="barcodeInput"
-                    type="text"
-                    class="form-control search-box"
-                    value="{{ barcode or '' }}"
-                    placeholder="Search product or scan barcode...">
-
-            </div>
-
-        <div class="col-md-4">
-
-            <button class="btn btn-primary w-100 search-box">
-                <i class="bi bi-search">Search Product</i>
-            </button>
-
-        </div>
-
-        </div>
-
-    </div>
-
-    <div class="row">
-
+        <!-- ================= LEFT SIDE ================= -->
         <div class="col-lg-8">
 
-            <div class="card p-3">
+            <!-- Search -->
+            <div class="card shadow-sm border-0 mb-3">
 
-            <h4 class="mb-3">Order Items</h4>
+                <div class="card-body">
 
-            <table class="table table-hover">
+                    <div class="row g-2">
 
-            <thead class="table-dark">
+                        <div class="col-md-10">
 
-            <tr>
+                            <input
+                                id="barcodeInput"
+                                type="text"
+                                class="form-control form-control-lg"
+                                placeholder="Search product or scan barcode">
 
-            <th>Product</th>
-            <th>Price</th>
-            <th width="180">Qty</th>
-            <th>Total</th>
-            <th></th>
+                        </div>
 
-            </tr>
+                        <div class="col-md-2 d-grid">
 
-            </thead>
+                            <button
+                                class="btn btn-primary btn-lg"
+                                id="searchProduct">
 
-            <tbody>
+                                <i class="bi bi-search"></i>
 
-            <tr>
+                            </button>
 
-            <td>Coca Cola 500ml</td>
+                        </div>
 
-            <td>₹40</td>
+                    </div>
 
-            <td>
-
-            <div class="btn-group">
-
-            <button class="btn btn-outline-secondary qty-btn">-</button>
-
-            <input
-            type="text"
-            class="form-control text-center"
-            value="1"
-            style="width:60px;">
-
-            <button class="btn btn-outline-secondary qty-btn">+</button>
+                </div>
 
             </div>
 
-            </td>
+            <!-- Current Order -->
+            <div class="card shadow-sm border-0">
 
-            <td>₹40</td>
+                <div class="card-header bg-dark text-white">
 
-            <td>
+                    <h5 class="mb-0">
 
-            <button class="btn btn-danger btn-sm">
+                        <i class="bi bi-cart3"></i>
 
-            <i class="bi bi-trash"></i>
+                        Current Order
 
-            </button>
+                    </h5>
 
-            </td>
+                </div>
 
-            </tr>
+                <div class="table-responsive">
 
-            <tr>
+                    <table class="table table-hover align-middle mb-0">
 
-            <td>Potato Chips</td>
+                        <thead class="table-light">
 
-            <td>₹30</td>
+                        <tr>
 
-            <td>
+                            <th>Product</th>
+                            <th width="120">Price</th>
+                            <th width="180">Qty</th>
+                            <th width="120">Total</th>
+                            <th width="70">Remove</th>
 
-            <div class="btn-group">
+                        </tr>
 
-            <button class="btn btn-outline-secondary qty-btn">-</button>
+                        </thead>
 
-            <input
-            type="text"
-            class="form-control text-center"
-            value="2"
-            style="width:60px;">
+                        <tbody id="orderTable">
 
-            <button class="btn btn-outline-secondary qty-btn">+</button>
+                            <!-- JavaScript will add products here -->
 
-            </div>
+                        </tbody>
 
-            </td>
+                    </table>
 
-            <td>₹60</td>
-
-            <td>
-
-            <button class="btn btn-danger btn-sm">
-
-            <i class="bi bi-trash"></i>
-
-            </button>
-
-            </td>
-
-            </tr>
-
-            </tbody>
-
-            </table>
+                </div>
 
             </div>
 
         </div>
 
-    <div class="col-lg-4">
+        <!-- ================= RIGHT SIDE ================= -->
+        <div class="col-lg-4">
 
-    <div class="card summary p-4">
+            <!-- Scanner -->
+            <div class="card shadow-sm border-0 mb-3">
 
-    <h4 class="mb-4">
+                <div class="card-header bg-dark text-white">
 
-    Order Summary
+                    <h5 class="mb-0">
 
-    </h4>
+                        <i class="bi bi-upc-scan"></i>
 
-    <div class="d-flex justify-content-between total-box">
+                        Barcode Scanner
 
-    <span>Items</span>
+                    </h5>
 
-    <strong>3</strong>
+                </div>
+
+                <div class="card-body">
+
+                    <video
+                        id="reader"
+                        style="
+                            width:100%;
+                            border-radius:10px;
+                            border:2px solid #ddd;
+                            min-height:250px;
+                            background:#000;">
+                    </video>
+
+                    <div class="d-grid gap-2 mt-3">
+
+                        <button
+                            id="startCamera"
+                            class="btn btn-success">
+
+                            <i class="bi bi-camera-video-fill"></i>
+
+                            Start Camera
+
+                        </button>
+
+                        <button
+                            id="stopCamera"
+                            class="btn btn-danger">
+
+                            <i class="bi bi-camera-video-off-fill"></i>
+
+                            Stop Camera
+
+                        </button>
+
+                    </div>
+
+                    <div class="alert alert-success mt-3 mb-0">
+
+                        <strong>Last Barcode:</strong>
+
+                        <br>
+
+                        <span id="barcodeResult">
+
+                            Waiting...
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Order Summary -->
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h4 class="mb-4">
+
+                        <i class="bi bi-receipt"></i>
+
+                        Order Summary
+
+                    </h4>
+
+                    <div class="d-flex justify-content-between mb-2">
+
+                        <span>Items</span>
+
+                        <strong id="totalItems">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+
+                        <span>Subtotal</span>
+
+                        <strong id="subtotal">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+
+                        <span>Discount</span>
+
+                        <strong>
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+
+                        <span>Tax</span>
+
+                        <strong>
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between fs-4">
+
+                        <strong>Total</strong>
+
+                        <strong id="grandTotal">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <label class="form-label">
+
+                            Payment Method
+
+                        </label>
+
+                        <select class="form-select">
+
+                            <option>Cash</option>
+
+                            <option>UPI</option>
+
+                            <option>Credit Card</option>
+
+                            <option>Debit Card</option>
+
+                        </select>
+
+                    </div>
+
+                    <button
+                        class="btn btn-warning w-100 mt-4 btn-lg">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        Complete Order
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <hr>
-
-    <div class="d-flex justify-content-between total-box">
-
-    <span>Subtotal</span>
-
-    <strong>₹100</strong>
-
-    </div>
-
-    <hr>
-
-    <div class="d-flex justify-content-between total-box">
-
-    <span>Discount</span>
-
-    <strong>₹0</strong>
-
-    </div>
-
-    <hr>
-
-    <div class="d-flex justify-content-between total-box">
-
-    <span>Tax</span>
-
-    <strong>₹0</strong>
-
-    </div>
-
-    <hr>
-
-    <div class="d-flex justify-content-between fs-4">
-
-    <strong>Total</strong>
-
-    <strong>₹100</strong>
-
-    </div>
-
-    <div class="mt-4">
-
-    <label class="form-label">
-
-    Payment Method
-
-    </label>
-
-    <select class="form-select">
-
-    <option>Cash</option>
-
-    <option>UPI</option>
-
-    <option>Credit Card</option>
-
-    <option>Debit Card</option>
-
-    </select>
-
-    </div>
-
-    <button class="btn btn-warning w-100 complete-btn mt-4">
-
-    <i class="bi bi-check-circle"></i>
-
-    Complete Order
-
-    </button>
-
-    </div>
-
-    </div>
-
-    </div>
 </div>
-{% endblock %}
+
+<!-- ZXing -->
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<!-- Scanner Script -->
+<script src="{{ url_for('static', filename='js/new_order_scanner.js') }}"></script>
+
+{% endblock %}  

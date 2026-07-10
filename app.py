@@ -483,28 +483,51 @@ def delete_account():
 
 @app.route("/admin/new-orders")
 def new_orders():
-    barcode = request.args.get("barcode")
-    return render_template("admin/new_orders.html",barcode=barcode)
+    return render_template("admin/new_orders.html")
 
-@app.route("/admin/scanner")
-def scanner():
-    return render_template("admin/scanner.html")
 
-@app.route("/lookup-barcode/<barcode>")
-def lookup_barcode(barcode):
+@app.route("/api/search_product/<barcode>")
+def search_product(barcode):
 
-    product = search_product(barcode)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            product_name,
+            category,
+            brand,
+            price,
+            quantity,
+            supplier,
+            description
+        FROM products
+        WHERE sku = %s
+    """, (barcode,))
+
+    product = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
 
     if product:
+
         return jsonify({
             "found": True,
-            "product_name": product["title"],
-            "brand": product["brand"],
-            "description": product["description"],
-            "category": product["category"]
+            "source": "local",
+            "product_name": product[0],
+            "category": product[1],
+            "brand": product[2],
+            "price": product[3],
+            "quantity": product[4],
+            "supplier": product[5],
+            "description": product[6]
         })
 
-    return jsonify({"found": False})
+    return jsonify({
+        "found": False
+    })
+
 
 if __name__ == "__main__":
     create_users_table()

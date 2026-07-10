@@ -180,3 +180,25 @@ function stopScanner() {
 }
 
 stopBtn.addEventListener("click", stopScanner);
+
+document.getElementById("clearForm").addEventListener("click", function () {
+
+    // Clear the form
+    document.querySelector("form").reset();
+
+    // Clear scanner fields
+    document.getElementById("barcodeResult").value = "";
+    document.getElementById("sku").value = "";
+
+    // Clear any auto-filled fields
+    document.getElementById("product_name").value = "";
+    document.getElementById("brand").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("quantity").value = "";
+    document.getElementById("suppliers").value = "";
+    document.getElementById("description").value = "";
+
+    // Reset category to first option
+    document.getElementById("category").selectedIndex = 0;
+
+});

@@ -1,76 +1,19 @@
 from flask import Flask, render_template, redirect, request, session, url_for, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import psycopg2
+from database import get_db_connection
+from config import Config
+from models import create_products_table, create_users_table
 import requests
 
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
-
-app.secret_key = "your_secret_key_here"
-
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USERNAME"] = "phangkykurkalang12@gmail.com"
-app.config["MAIL_PASSWORD"] = "qlww wrfi mssl iiyn"
-app.config["MAIL_DEFAULT_SENDER"] = "phangkykurkalang12@gmail.com"
+app.config.from_object(Config)
 
 mail = Mail(app)
 
-serializer = URLSafeTimedSerializer(app.secret_key)
-
-def get_db_connection():
-    conn = psycopg2.connect(
-        host="localhost",
-        database="rmsDB",
-        user="postgres",
-        password="0000"
-    )
-    return conn
-
-def create_users_table():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users(
-            id SERIAL PRIMARY KEY,
-            username VARCHAR(50) UNIQUE NOT NULL,
-            email VARCHAR(100) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
-        )
-    """)
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    print("Books table created successfully.")
-
-def create_products_table():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS products(
-            id SERIAL PRIMARY KEY,
-            product_name VARCHAR(255) NOT NULL,
-            category VARCHAR(100),
-            brand VARCHAR(100),
-            price NUMERIC(10,2),
-            quantity INTEGER,
-            sku VARCHAR(100) UNIQUE,
-            supplier VARCHAR(255),
-            description TEXT
-                   )
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    print("Products table created successfully.")
+serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 @app.route("/")
 def home():

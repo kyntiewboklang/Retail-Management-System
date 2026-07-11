@@ -319,3 +319,58 @@ document.addEventListener("click", function (e) {
     updateSummary();
 
 });
+
+// COMPLETE ORDER
+
+document.getElementById("completeOrder").addEventListener("click", async () => {
+
+    console.log("Complete Order button clicked");
+
+
+    const rows = document.querySelectorAll("#orderTable tr");
+
+    const items = [];
+
+    rows.forEach(row => {
+
+        items.push({
+
+            barcode: row.dataset.barcode,
+
+            product_name: row.cells[0].innerText,
+
+            price: parseFloat(row.querySelector(".price").innerText),
+
+            quantity: parseInt(row.querySelector(".qty").value)
+
+        });
+
+    });
+
+    const paymentMethod = document.getElementById("paymentMethod").value;
+    const response = await fetch("/admin/complete-order", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            payment_method: paymentMethod,
+            items: items
+        })
+
+    });
+
+    const result = await response.json();
+
+    alert(result.message);
+
+    if (result.success) {
+
+        location.reload();
+
+    }
+
+});

@@ -1,11 +1,11 @@
-from flask import Flask, render_template, redirect, request, session, url_for, flash, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, redirect, request, session, url_for, flash
 from database import get_db_connection
 from config import Config
-from models import create_products_table, create_users_table
+from models import create_products_table, create_users_table, create_orders_table, create_order_items_table
 from route.dashboard_route import register_dashboard_routes
 from route.product_route import register_product_routes
 from route.auth_route import register_auth_routes
+from route.order_route import register_order_routes
 
 from flask_mail import Mail
 
@@ -18,6 +18,7 @@ mail = Mail(app)
 register_dashboard_routes(app)
 register_product_routes(app)
 register_auth_routes(app, mail)
+register_order_routes(app)
 
 
 @app.route("/")
@@ -121,11 +122,10 @@ def delete_account():
 
     return redirect("/login")
 
-@app.route("/admin/new-orders")
-def new_orders():
-    return render_template("admin/new_orders.html")
-
 if __name__ == "__main__":
     create_users_table()
     create_products_table()
+    create_orders_table()
+    create_order_items_table()
     app.run(host="0.0.0.0", port=5000, debug=True)
+

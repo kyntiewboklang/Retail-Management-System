@@ -89,6 +89,15 @@ def register_product_routes(app):
             if row[5] == 0
         )
 
+        cursor.execute("""
+            SELECT DISTINCT category
+            FROM products
+            WHERE category IS NOT NULL
+            ORDER BY category
+        """)
+
+        categories = [row[0] for row in cursor.fetchall()]
+
         cursor.close()
         conn.close()
 
@@ -98,7 +107,8 @@ def register_product_routes(app):
             total_products=total_products,
             total_stock=total_stock,
             low_stock=low_stock,
-            out_stock=out_stock
+            out_stock=out_stock,
+            categories=categories
         )
     
     @app.route("/api/search_product/<barcode>")

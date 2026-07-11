@@ -69,19 +69,20 @@
 
                 <div class="col-md-5">
                     <input type="text"
-                           class="form-control"
-                           placeholder="Search Product...">
+                        id="searchProduct"
+                        class="form-control"
+                        placeholder="Search Product...">
                 </div>
 
                 <div class="col-md-4">
 
-                    <select class="form-select">
+                    <select id="categoryFilter" class="form-select">
 
-                        <option value="">All Repositories</option>
+                        <option value="">All Categories</option>
 
-                        {% for repo in repositories %}
-                        <option value="{{ repo.id }}">
-                            {{ repo.name }}
+                        {% for category in categories %}
+                        <option value="{{ category }}">
+                            {{ category }}
                         </option>
                         {% endfor %}
 
@@ -90,7 +91,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <button class="btn btn-primary w-100">
+                    <button id="searchBtn" class="btn btn-primary w-100">
                         Search
                     </button>
                 </div>
@@ -113,7 +114,7 @@
 
         <div class="table-responsive">
 
-            <table class="table table-hover align-middle mb-0">
+            <table id="stockTable" class="table table-hover align-middle mb-0">
 
                 <thead class="table-light">
 
@@ -187,5 +188,6 @@
     </div>
 
 </div>
+<script src="{{ url_for('static', filename='js/available_stocks.js') }}"></script>
 
 {% endblock %}

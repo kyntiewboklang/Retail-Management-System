@@ -8,6 +8,8 @@ from flask import (
     session
 )
 
+import requests
+
 from database import get_db_connection
 
 def register_product_routes(app):
@@ -161,6 +163,37 @@ def register_product_routes(app):
                 "supplier": product[5],
                 "description": product[6]
             })
+
+        # Search Open Food Facts
+        # ----------------------------
+
+        url = f"https://world.openfoodfacts.org/api/v2/product/{barcode}.json"
+
+        try:
+            response = requests.get(url, timeout=5)
+
+            if response.status_code == 200:
+
+                data = response.json()
+
+                if data.get("status") == 1:
+
+                    p = data["product"]
+
+                    return jsonify({
+                        "found": True,
+                        "source": "openfoodfacts",
+                        "product_name": p.get("product_name", ""),
+                        "category": p.get("categories", ""),
+                        "brand": p.get("brands", ""),
+                        "price": "",
+                        "quantity": 0,
+                        "supplier": "",
+                        "description": p.get("generic_name", "")
+                    })
+
+        except Exception as e:
+            print(e)
 
         return jsonify({
             "found": False

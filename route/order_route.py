@@ -1,4 +1,11 @@
-from flask import request, jsonify, render_template, session
+from flask import (
+    request,
+    jsonify,
+    render_template,
+    session,
+    redirect,
+    url_for
+)
 from database import get_db_connection
 
 def register_order_routes(app):
@@ -29,12 +36,21 @@ def register_order_routes(app):
 
         cursor.execute(
             """
-            INSERT INTO orders (total_amount, payment_method)
-            VALUES (%s, %s)
+            INSERT INTO orders
+            (
+                user_id,
+                total_amount,
+                payment_method
+            )
+            VALUES (%s, %s, %s)
             RETURNING id
             """,
-            (total_amount, payment_method)
-        )
+            (
+                session["user_id"],
+                total_amount,
+                payment_method
+            )
+        )   
 
         order_id = cursor.fetchone()[0]
 
@@ -44,7 +60,11 @@ def register_order_routes(app):
                 SELECT id, quantity
                 FROM products
                 WHERE sku = %s
-            """, (item["barcode"],))
+                AND user_id = %s
+            """, (
+                item["barcode"],
+                session["user_id"]
+            ))
 
             product = cursor.fetchone()
 
@@ -78,16 +98,18 @@ def register_order_routes(app):
                 INSERT INTO order_items
                 (
                     order_id,
+                    user_id,
                     product_id,
                     quantity,
                     price,
                     subtotal
                 )
                 VALUES
-                (%s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s)
             """,
             (
                 order_id,
+                session["user_id"],
                 product_id,
                 item["quantity"],
                 item["price"],
@@ -98,10 +120,12 @@ def register_order_routes(app):
                 UPDATE products
                 SET quantity = quantity - %s
                 WHERE id = %s
+                AND user_id = %s
             """,
             (
                 item["quantity"],
-                product_id
+                product_id,
+                session["user_id"]
             ))
 
         conn.commit()

@@ -61,10 +61,13 @@ async function lookupProduct(barcode) {
 
         console.log(data);
 
+        if (data.source === "openfoodfacts") {
+            alert("Product found in Open Food Facts.\nPlease verify the details before saving.");
+        }
+
         if (!data.found) {
 
-            alert("Product not found.\nPlease enter details manually.");
-
+            alert("Product was not found in your inventory or Open Food Facts.\n\nPlease enter the details manually.");
             return;
         }
 
@@ -195,7 +198,7 @@ document.getElementById("clearForm").addEventListener("click", function () {
     document.getElementById("brand").value = "";
     document.getElementById("price").value = "";
     document.getElementById("quantity").value = "";
-    document.getElementById("suppliers").value = "";
+    document.getElementById("supplier").value = "";
     document.getElementById("description").value = "";
 
     // Reset category to first option

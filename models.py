@@ -54,17 +54,21 @@ def create_orders_table():
     cursor = conn.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS orders (
+        CREATE TABLE IF NOT EXISTS orders (
 
-        id SERIAL PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
 
-        order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            user_id INTEGER NOT NULL,
 
-        total_amount NUMERIC(10,2) NOT NULL,
+            order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-        payment_method VARCHAR(50) NOT NULL
+            total_amount NUMERIC(10,2) NOT NULL,
 
-    )
+            payment_method VARCHAR(50) NOT NULL,
+
+            FOREIGN KEY (user_id) REFERENCES users(id)
+
+        )
 """)
 
     conn.commit()
@@ -85,6 +89,8 @@ def create_order_items_table():
 
             order_id INT NOT NULL,
 
+            user_id INT NOT NULL,
+
             product_id INT NOT NULL,
 
             quantity INT NOT NULL,
@@ -95,7 +101,9 @@ def create_order_items_table():
 
             FOREIGN KEY (order_id) REFERENCES orders(id),
 
-            FOREIGN KEY (product_id) REFERENCES products(id)
+            FOREIGN KEY (product_id) REFERENCES products(id),
+
+            FOREIGN KEY (user_id) REFERENCES users(id)
 
         )
     """)

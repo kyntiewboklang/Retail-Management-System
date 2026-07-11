@@ -301,7 +301,7 @@ document.addEventListener("click", function (e) {
 
             return;
 
-        }
+        }       
 
         qtyInput.value++;
 

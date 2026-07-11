@@ -121,6 +121,7 @@ function addProduct(product, barcode) {
     const row = document.createElement("tr");
 
     row.dataset.barcode = barcode;
+    row.dataset.stock = product.quantity;
 
     row.innerHTML = `
 
@@ -290,7 +291,17 @@ document.addEventListener("click", function (e) {
         row.querySelector(".price").innerText
     );
 
+    const availableStock = parseInt(row.dataset.stock);
+
     if (e.target.classList.contains("plus")) {
+
+        if (parseInt(qtyInput.value) >= availableStock) {
+
+            alert(`Only ${availableStock} item(s) available in stock.`);
+
+            return;
+
+        }
 
         qtyInput.value++;
 

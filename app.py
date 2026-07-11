@@ -6,7 +6,7 @@ from route.dashboard_route import register_dashboard_routes
 from route.product_route import register_product_routes
 from route.auth_route import register_auth_routes
 from route.order_route import register_order_routes
-from route.settings_route import register_settings_routes
+
 
 from flask_mail import Mail
 
@@ -20,7 +20,6 @@ register_dashboard_routes(app)
 register_product_routes(app)
 register_auth_routes(app, mail)
 register_order_routes(app)
-register_settings_routes(app)
 
 
 @app.route("/")

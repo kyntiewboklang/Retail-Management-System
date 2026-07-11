@@ -1,14 +1,18 @@
-from flask import request, jsonify, render_template 
+from flask import request, jsonify, render_template, session
 from database import get_db_connection
 
 def register_order_routes(app):
 
     @app.route("/admin/new-orders")
     def new_orders():
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
         return render_template("admin/new_orders.html")
 
     @app.route("/admin/complete-order", methods=["POST"])
     def complete_order():
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
 
         data = request.get_json()
 

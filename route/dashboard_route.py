@@ -1,10 +1,13 @@
-from flask import render_template
+from flask import render_template, session
 from database import get_db_connection
 
 def register_dashboard_routes(app):
 
     @app.route("/admin/dashboard")
     def dashboard():
+
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
 
         conn = get_db_connection()
         cursor = conn.cursor()

@@ -4,7 +4,8 @@ from flask import (
     redirect,
     url_for,
     flash,
-    jsonify
+    jsonify,
+    session
 )
 
 from database import get_db_connection
@@ -12,6 +13,9 @@ from database import get_db_connection
 def register_product_routes(app):
     @app.route("/admin/add_product", methods=["GET", "POST"])
     def add_product():
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
+        
         if request.method =="POST":
             product_name = request.form["product_name"]
             category = request.form["category"]
@@ -28,6 +32,7 @@ def register_product_routes(app):
             cursor.execute("""
                 INSERT INTO products
                 (
+                    user_id,
                     product_name,
                     category,
                     brand,
@@ -37,9 +42,10 @@ def register_product_routes(app):
                     supplier,
                     description
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)
             """,
             (
+                session["user_id"],
                 product_name,
                 category,
                 brand,
@@ -63,15 +69,17 @@ def register_product_routes(app):
     
     @app.route("/admin/available_stock")
     def available_stock():
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
             SELECT *
-            FROM products
+            FROM products WHERE user_id = %s
             ORDER BY product_name
-        """)
+        """, (session["user_id"],))
 
         stocks = cursor.fetchall()
 
@@ -92,9 +100,9 @@ def register_product_routes(app):
         cursor.execute("""
             SELECT DISTINCT category
             FROM products
-            WHERE category IS NOT NULL
+            WHERE user_id = %s AND category IS NOT NULL
             ORDER BY category
-        """)
+        """, (session["user_id"],))
 
         categories = [row[0] for row in cursor.fetchall()]
 
@@ -113,6 +121,8 @@ def register_product_routes(app):
     
     @app.route("/api/search_product/<barcode>")
     def search_product(barcode):
+        if "user_id" not in session:
+            return redirect(url_for("admin_login"))
 
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -127,9 +137,12 @@ def register_product_routes(app):
                 supplier,
                 description
             FROM products
-            WHERE sku = %s
-        """, (barcode,))
-
+            WHERE user_id = %s
+            AND sku = %s
+        """, (
+            session["user_id"],
+            barcode
+        ))
         product = cursor.fetchone()
 
         cursor.close()

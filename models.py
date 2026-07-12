@@ -113,3 +113,38 @@ def create_order_items_table():
     conn.close()
 
     print("order item created successfully")
+
+def create_staff_table():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS staff (
+
+            id SERIAL PRIMARY KEY,
+
+            admin_id INTEGER NOT NULL,
+
+            username VARCHAR(100) NOT NULL,
+
+            email VARCHAR(100) UNIQUE NOT NULL,
+
+            phone VARCHAR(20) NOT NULL,
+
+            password VARCHAR(255) NOT NULL,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (admin_id)
+                REFERENCES users(id)
+                ON DELETE CASCADE
+
+        )
+    """)
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    print("Staff table created successfully.")

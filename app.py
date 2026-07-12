@@ -1,13 +1,14 @@
 from flask import Flask, render_template, redirect, request, session, url_for, flash
 from database import get_db_connection
 from config import Config
-from models import create_products_table, create_users_table, create_orders_table, create_order_items_table
-from route.dashboard_route import register_dashboard_routes
-from route.product_route import register_product_routes
+from models import create_products_table, create_users_table, create_orders_table, create_order_items_table, create_staff_table
+from route.admin.dashboard_route import register_dashboard_routes
+from route.admin.product_route import register_product_routes
 from route.auth_route import register_auth_routes
-from route.order_route import register_order_routes
-from route.staff_route import register_staff_routes
-
+from route.admin.order_route import register_order_routes
+from route.admin.staff_route import register_staff_routes
+from route.admin.settings_route import register_settings_routes
+from route.staff.staff_dashboard_route import register_staff_dashboard_route
 
 from flask_mail import Mail
 
@@ -22,6 +23,8 @@ register_product_routes(app)
 register_auth_routes(app, mail)
 register_order_routes(app)
 register_staff_routes(app)
+register_settings_routes(app)
+register_staff_dashboard_route(app)
 
 @app.route("/")
 def home():
@@ -129,5 +132,6 @@ if __name__ == "__main__":
     create_products_table()
     create_orders_table()
     create_order_items_table()
+    create_staff_table()
     app.run(host="0.0.0.0", port=5000, debug=True)
 

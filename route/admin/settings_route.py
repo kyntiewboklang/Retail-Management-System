@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template,session
 
 def register_settings_routes(app):
     @app.route("/admin/settings")

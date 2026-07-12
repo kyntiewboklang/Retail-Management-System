@@ -30,80 +30,52 @@
 
         </div>
 
-        <table class="table table-hover align-middle">
+        <table class="table table-hover">
 
-            <thead class="table-light">
+            <thead>
 
                 <tr>
-                    <th>#</th>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th class="text-center">Actions</th>
+                    <th>Phone</th>
+                    <th>Joined</th>
+                    <th>Action</th>
                 </tr>
 
             </thead>
 
             <tbody>
 
-            {% for staff in staff_list %}
+                {% for staff in staff_list %}
 
                 <tr>
 
                     <td>{{ staff[0] }}</td>
-
                     <td>{{ staff[1] }}</td>
-
                     <td>{{ staff[2] }}</td>
-
-                    <td>
-
-                        {% if staff[3] == "admin" %}
-                            <span class="badge bg-danger">Admin</span>
-                        {% elif staff[3] == "manager" %}
-                            <span class="badge bg-warning text-dark">Manager</span>
-                        {% else %}
-                            <span class="badge bg-primary">Cashier</span>
-                        {% endif %}
-
-                    </td>
-
-                    <td>
-
-                        {% if staff[4] %}
-                            <span class="badge bg-success">
-                                Active
-                            </span>
-                        {% else %}
-                            <span class="badge bg-secondary">
-                                Inactive
-                            </span>
-                        {% endif %}
-
-                    </td>
-
+                    <td>{{ staff[3] }}</td>
+                    <td>{{ staff[4].strftime("%d-%m-%Y") }}</td>
                     <td class="text-center">
 
-                        <a href="/admin/edit-staff/{{ staff[0] }}"
-                           class="btn btn-sm btn-warning">
-
-                            <i class="bi bi-pencil"></i>
-
+                        <a href="/admin/edit_staff/{{ staff[0] }}"
+                        class="btn btn-sm btn-warning me-2"
+                        title="Edit Staff">
+                            <i class="bi bi-pencil-square"></i>
                         </a>
 
-                        <a href="/admin/delete-staff/{{ staff[0] }}"
-                           class="btn btn-sm btn-danger">
-
+                        <a href="/admin/delete_staff/{{ staff[0] }}"
+                        class="btn btn-sm btn-danger"
+                        title="Delete Staff"
+                        onclick="return confirm('Are you sure you want to delete this staff member?');">
                             <i class="bi bi-trash"></i>
-
                         </a>
 
                     </td>
 
                 </tr>
 
-            {% endfor %}
+                {% endfor %}
 
             </tbody>
 

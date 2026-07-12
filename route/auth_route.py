@@ -31,31 +31,70 @@ def register_auth_routes(app, mail):
             email = request.form["email"]
             password = request.form["password"]
 
-            print("Email:", email)
-            print("Password:", password)
-
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # ==========================
+            # Check Admin
+            # ==========================
             cursor.execute("""
-                SELECT * FROM users
-                WHERE email=%s
+                SELECT
+                    id,
+                    username,
+                    email,
+                    password,
+                    role
+                FROM users
+                WHERE email = %s
             """, (email,))
-            user = cursor.fetchone()
 
-            print("User found:", user)
+            admin = cursor.fetchone()
+
+            if admin and check_password_hash(admin[3], password):
+
+                session.clear()
+
+                session["user_id"] = admin[0]
+                session["username"] = admin[1]
+                session["email"] = admin[2]
+                session["role"] = "admin"
+
+                cursor.close()
+                conn.close()
+
+                return redirect("/admin/dashboard")
+
+            # ==========================
+            # Check Staff
+            # ==========================
+            cursor.execute("""
+                SELECT
+                    id,
+                    admin_id,
+                    username,
+                    email,
+                    password
+                FROM staff
+                WHERE email = %s
+            """, (email,))
+
+            staff = cursor.fetchone()
 
             cursor.close()
             conn.close()
 
-            if user and check_password_hash(user[3], password):
-                session["user_id"] = user[0]
-                session["username"] = user[1]
-                session["email"] = user[2]
+            if staff and check_password_hash(staff[4], password):
 
-                return redirect("/admin/dashboard")
+                session.clear()
 
-            print("Login Failed")
+                session["staff_id"] = staff[0]
+                session["admin_id"] = staff[1]
+                session["username"] = staff[2]
+                session["email"] = staff[3]
+                session["role"] = "staff"
+
+                return redirect("/staff/dashboard")
+
             return "Invalid email or password"
 
         return render_template("login.html")

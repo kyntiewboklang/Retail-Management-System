@@ -7,16 +7,16 @@
 
 {% block content %}
 
-    <h2 class="text-center mb-2">ADD STAFF</h2>
+    <h2 class="text-center mb-2">{% if staff %} EDIT STAFF {% else %} ADD STAFF {% endif %}</h2>
 
-    <form action="/register" method="POST">
-
+    <form action="{% if staff %}/admin/edit_staff/{{ staff[0] }}{% else %}/admin/add_staff{% endif %}" method="POST">
         <div class="mb-3">
             <label class="form-label">Username</label>
             <input
                 type="text"
                 class="form-control"
                 name="username"
+                value="{{ staff[1] if staff else '' }}"
                 placeholder="Enter username"
                 required>
         </div>
@@ -27,6 +27,7 @@
                 type="email"
                 class="form-control"
                 name="email"
+                value="{{ staff[2] if staff else '' }}"
                 placeholder="Enter email"
                 required>
         </div>
@@ -37,24 +38,37 @@
                 type="phone"
                 class="form-control"
                 name="phone"
+                value="{{ staff[3] if staff else '' }}"
                 placeholder="Enter Phone Number"
                 required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Password</label>
+
+            <label class="form-label">
+                Password
+                {% if staff %}
+                    <small class="text-muted">(Leave blank to keep the current password)</small>
+                {% endif %}
+            </label>
+
             <input
                 type="password"
                 class="form-control"
                 name="password"
-                placeholder="Enter your password"
-                required>
+                placeholder="{% if staff %}Leave blank to keep current password{% else %}Enter password{% endif %}"
+                {% if not staff %}required{% endif %}>
+
         </div>
 
 
         <div class="d-grid">
             <button type="submit" class="btn btn-success">
-                ADD STAFF
+                {% if staff %}
+                EDIT STAFF INFO{% else %} ADD STAFF
+
+                {% endif %}
+
             </button>
         </div>
 

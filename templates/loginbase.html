@@ -1,94 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Department Management System{% endblock %}</title>
 
-    <title>Departmental Store</title>
-
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-
+    <!-- Auth CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 
 <body>
 
+<div class="auth-container">
 
+    <!-- Left Panel -->
+    <div class="auth-left">
 
-<div class="topbar">
+        <div class="overlay"></div>
 
-    <div class="dropdown profile">
+        <div class="left-content">
 
-    <span class="username">
-        Welcome, {{ session.get('username') }}
-    </span>
+            <div class="logo-circle">
+                <i class="bi bi-shop"></i>
+            </div>
 
-    <button class="profile-icon border-0"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false">
+            <h1>Department Management System</h1>
 
-        <i class="bi bi-gear-fill"></i>
+            <p>
+                Manage inventory, products, sales,
+                barcode scanning, and customer orders
+                from one modern dashboard.
+            </p>
 
-    </button>
+            <div class="features">
 
-    <ul class="dropdown-menu dropdown-menu-end shadow">
+                <div class="feature">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Inventory Management</span>
+                </div>
 
-        <li class="dropdown-header">
-            <small>{{ session.get('email') }}</small>
-        </li>
+                <div class="feature">
+                    <i class="bi bi-upc-scan"></i>
+                    <span>Barcode Scanner</span>
+                </div>
 
-        <li><hr class="dropdown-divider"></li>
+                <div class="feature">
+                    <i class="bi bi-cart-check"></i>
+                    <span>Order Processing</span>
+                </div>
 
-        <li>
-            <a class="dropdown-item" href="{{ url_for('change_password') }}">
-                <i class="bi bi-lock"></i>
-                Change Password
-            </a>
-        </li>
+                <div class="feature">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span>Sales Analytics</span>
+                </div>
 
-        <li>
-            <a class="dropdown-item" href="{{ url_for('change_email') }}">
-                <i class="bi bi-envelope"></i>
-                Change Email
-            </a>
-        </li>
+            </div>
 
-        <li>
-            <a class="dropdown-item" href="{{ url_for('delete_account') }}"
-            onclick="return confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')">
-                <i class="bi bi-trash-fill"></i>
-                Delete Account
-            </a>
-        </li>
+        </div>
 
-        <li><hr class="dropdown-divider"></li>
+    </div>
 
-        <li>
-            <a class="dropdown-item text-danger"
-               href="{{ url_for('logout') }}">
-                <i class="bi bi-box-arrow-right"></i>
-                Logout
-            </a>
-        </li>
+    <!-- Right Panel -->
+    <div class="auth-right">
 
-    </ul>
+        <div class="form-card">
 
-</div>
+            {% block auth_content %}
+            {% endblock %}
+
+        </div>
+
+    </div>
 
 </div>
 
+{% block scripts %}{% endblock %}
 
-<div class="content">
-
-{% block content %}
-{% endblock %}
-
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

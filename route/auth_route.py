@@ -79,9 +79,9 @@ def register_auth_routes(app, mail):
             cursor = conn.cursor()
 
             cursor.execute("""
-                INSERT INTO users(username, email, password)
-                VALUES (%s, %s, %s)
-            """, (username, email, hashed_password))
+                INSERT INTO users(username, email, password, role)
+                VALUES (%s, %s, %s, %s)
+            """, (username, email, hashed_password, "admin"))
 
             conn.commit()
 

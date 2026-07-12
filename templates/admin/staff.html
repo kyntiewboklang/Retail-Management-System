@@ -1,0 +1,116 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="topbar d-flex justify-content-between align-items-center">
+
+    <h3>Staff Management</h3>
+
+    <a href="/admin/add_staff" class="btn btn-primary">
+        <i class="bi bi-person-plus-fill"></i>
+        Add Staff
+    </a>
+
+</div>
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-body">
+
+        <div class="row mb-3">
+
+            <div class="col-md-4">
+
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by name or email">
+
+            </div>
+
+        </div>
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for staff in staff_list %}
+
+                <tr>
+
+                    <td>{{ staff[0] }}</td>
+
+                    <td>{{ staff[1] }}</td>
+
+                    <td>{{ staff[2] }}</td>
+
+                    <td>
+
+                        {% if staff[3] == "admin" %}
+                            <span class="badge bg-danger">Admin</span>
+                        {% elif staff[3] == "manager" %}
+                            <span class="badge bg-warning text-dark">Manager</span>
+                        {% else %}
+                            <span class="badge bg-primary">Cashier</span>
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if staff[4] %}
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                Inactive
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <a href="/admin/edit-staff/{{ staff[0] }}"
+                           class="btn btn-sm btn-warning">
+
+                            <i class="bi bi-pencil"></i>
+
+                        </a>
+
+                        <a href="/admin/delete-staff/{{ staff[0] }}"
+                           class="btn btn-sm btn-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

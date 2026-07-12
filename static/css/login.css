@@ -1,412 +1,171 @@
-/* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+    font-family:"Segoe UI",sans-serif;
 }
 
 body{
     background:#f4f7fb;
-}
-
-/* ===========================
-   Dashboard Layout
-=========================== */
-
-.sidebar{
-
-    position:fixed;
-    left:0;
-    top:0;
-
-    width:240px;
     height:100vh;
+}
 
-    background:#ffffff;
-
-    border-right:1px solid #ddd;
-
-    padding:25px 0;
-
+.auth-container{
     display:flex;
-    flex-direction:column;
+    height:100vh;
 }
 
-.logo{
-    padding:25px;
-    text-align:center;
-}
+/* LEFT SIDE */
 
-.logo-link{
+.auth-left{
+    flex:1;
+    position:relative;
+
+    background:
+        linear-gradient(rgba(15,23,42,.85),
+        rgba(30,64,175,.85)),
+        url("https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=80");
+
+    background-size:cover;
+    background-position:center;
+
+    color:white;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:10px;
-
-    text-decoration:none;
 }
 
-.logo-icon{
-    width:38px;
-    height:38px;
+.left-content{
+    width:75%;
+    z-index:2;
 }
 
-.logo-link span{
-    font-size:24px;
-    font-weight:700;
-    color:#000cb6;
-}
-
-.sidebar ul{
-
-    list-style:none;
-
-    padding:0;
-}
-
-.sidebar ul li{
-
-    margin-bottom:5px;
-}
-
-.sidebar ul li a{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    color:#333;
-
-    text-decoration:none;
-
-    padding:15px 30px;
-
-    transition:.3s;
-}
-
-.sidebar ul li a:hover{
-
-    background:#eef4ff;
-
-    color:#000cb6;
-
-    border-left:4px solid #000cb6;
-}
-
-.logout-btn{
-
-    margin-top:auto;
-
-    margin:20px;
-
-    text-align:center;
-
-    text-decoration:none;
-
-    padding:12px;
-
-    border-radius:10px;
-
-    background:#dc3545;
-
-    color:white;
-}
-
-.logout-btn:hover{
-
-    background:#b02a37;
-
-    color:white;
-}
-
-
-/* ===========================
-   Top Header
-=========================== */
-
-.topbar{
-
-    position:fixed;
-
-    left:240px;
-
-    right:0;
-
-    top:0;
-
-    height:75px;
-
-    background:white;
-
-    border-bottom:1px solid #ddd;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:0 35px;
-
-    z-index:100;
-}
-
-.search-box{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    background:#f4f7fb;
-
-    padding:10px 20px;
-
-    border-radius:30px;
-
-    width:420px;
-}
-
-.search-box input{
-
-    border:none;
-
-    outline:none;
-
-    background:transparent;
-
-    width:100%;
-}
-
-.profile{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:20px;
-}
-
-.profile-icon{
-
-    width:48px;
-
-    height:48px;
+.logo-circle{
+    width:90px;
+    height:90px;
 
     border-radius:50%;
-
-    background:#000cb6;
-
-    color:white;
+    background:white;
 
     display:flex;
-
+    align-items:center;
     justify-content:center;
 
-    align-items:center;
-
-    font-size:22px;
+    margin-bottom:30px;
 }
 
-
-/* ===========================
-   Main Content
-=========================== */
-
-.content{
-
-    margin-left:240px;
-
-    margin-top:75px;
-
-    padding:35px;
+.logo-circle i{
+    font-size:40px;
+    color:#2563eb;
 }
 
-/* Cards */
-
-.card{
-    border:none;
-    border-radius:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-/* Buttons */
-
-.btn-primary{
-    background:#000cb6;
-    border-radius:10px;
-    padding:10px 22px;
-}
-
-/* Headings */
-
-h1,h2,h3{
+.left-content h1{
+    font-size:42px;
     font-weight:700;
+    margin-bottom:20px;
 }
 
-/* Tables */
-
-.table{
-    background:white;
-    border-radius:15px;
-    overflow:hidden;
+.left-content p{
+    font-size:18px;
+    opacity:.9;
+    margin-bottom:40px;
+    line-height:1.7;
 }
 
-.table th{
-    background:#000cb6;
-    color:white;
+.features{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
 }
 
-.table td{
-    vertical-align:middle;
+.feature{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    font-size:18px;
 }
 
-/* Forms */
-
-.form-control,
-.form-select{
-    border-radius:10px;
+.feature i{
+    font-size:24px;
 }
 
-/* Login Page */
+/* RIGHT */
 
-html,
-body{
-    height:100%;
+.auth-right{
+    width:520px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#f8fafc;
 }
 
-.login-page{
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background: url("5cm.jpg") no-repeat center center;
-    background-size: cover;
-}
-
-.login-page::before{
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    /* Dark overlay */
-    background: rgba(0, 0, 0, 0.2);
-
-    z-index: 0;
-}
-
-.login-card{
-    position: relative;
-    z-index: 1;
+.form-card{
 
     width:420px;
-    padding:40px;
 
-    background: rgba(255,255,255,0.12);
-
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-
-    border:1px solid rgba(255,255,255,.35);
-
-    border-radius:20px;
-
-    box-shadow:0 8px 32px rgba(0,0,0,.35);
-}
-
-/* Login Card Text */
-
-.login-card{
-    color: #000;
-}
-
-.login-card h1,
-.login-card h2,
-.login-card label,
-.login-card p{
-    color: #000;
-}
-
-.login-card a{
-    color: #000cb6;
-    text-decoration: none;
-}
-
-.login-card a:hover{
-    text-decoration: underline;
-}
-
-.login-card .form-control{
-    color: #000;
-}
-
-.login-card .form-control::placeholder{
-    color: #555;
-}
-
-/* Dashboard */
-
-.hero{
     background:white;
-    padding:70px;
-    border-radius:20px;
-    text-align:center;
-    margin-top:40px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+    border-radius:18px;
+
+    padding:45px;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,.08);
 }
 
-.hero h1{
-    font-size:55px;
+.form-card h2{
+    font-weight:700;
+    margin-bottom:10px;
 }
 
-.hero p{
-    font-size:22px;
-    color:#666;
-
+.form-card p{
+    color:#64748b;
 }
 
-/*forgot button*/
-.forgot-link{
-    color: #000cb6;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
+.form-control{
+    height:52px;
 }
 
-.forgot-link:hover{
-    text-decoration: underline;
+.btn-primary{
+    height:52px;
+    font-weight:600;
 }
 
-/*eye button*/
 .password-wrapper{
-    position: relative;
-}
-
-.password-wrapper input{
-    padding-right: 45px;
+    position:relative;
 }
 
 .password-wrapper i{
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #555;
-    font-size: 18px;
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    cursor:pointer;
+
+    color:#64748b;
 }
 
-.password-wrapper i:hover{
-    color: #000cb6;
+@media(max-width:992px){
+
+    .auth-left{
+        display:none;
+    }
+
+    .auth-right{
+        width:100%;
+    }
+
+    .form-card{
+        width:90%;
+    }
+
 }

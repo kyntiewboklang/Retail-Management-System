@@ -1,0 +1,193 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">📦 Available Stock</h2>
+            <p class="text-muted mb-0">Current inventory across all repositories</p>
+        </div>
+
+        <a href="{{ url_for('add_product') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
+            Add Stock
+        </a>
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Products</h6>
+                    <h2>{{ total_products }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Stock</h6>
+                    <h2>{{ total_stock }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Low Stock</h6>
+                    <h2 class="text-warning">{{ low_stock }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Out of Stock</h6>
+                    <h2 class="text-danger">{{ out_stock }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Search + Filter -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-5">
+                    <input type="text"
+                        id="searchProduct"
+                        class="form-control"
+                        placeholder="Search Product...">
+                </div>
+
+                <div class="col-md-4">
+
+                    <select id="categoryFilter" class="form-select">
+
+                        <option value="">All Categories</option>
+
+                        {% for category in categories %}
+                        <option value="{{ category }}">
+                            {{ category }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+                    <button id="searchBtn" class="btn btn-primary w-100">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Stock Table -->
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                Inventory
+            </h5>
+        </div>
+
+        <div class="table-responsive">
+
+            <table id="stockTable" class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Brand</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Supplier</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for product in stocks %}
+
+                    <tr>
+
+                        <td>{{ product[6] }}</td> <!-- SKU -->
+
+                        <td>{{ product[1] }}</td> <!-- Product Name -->
+
+                        <td>{{ product[2] }}</td> <!-- Category -->
+
+                        <td>{{ product[3] }}</td> <!-- Brand -->
+
+                        <td>{{ product[5] }}</td> <!-- Quantity -->
+
+                        <td>₹{{ product[4] }}</td> <!-- Price -->
+
+                        <td>{{ product[7] }}</td> <!-- Supplier -->
+
+                        <td>
+
+                            {% if product[5] == 0 %}
+
+                                <span class="badge bg-danger">
+                                    Out of Stock
+                                </span>
+
+                            {% elif product[5] <= 10 %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Low Stock
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-success">
+                                    Available
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="{{ url_for('static', filename='js/available_stocks.js') }}"></script>
+
+{% endblock %}

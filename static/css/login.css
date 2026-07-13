@@ -1,0 +1,171 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    height:100vh;
+}
+
+.auth-container{
+    display:flex;
+    height:100vh;
+}
+
+/* LEFT SIDE */
+
+.auth-left{
+    flex:1;
+    position:relative;
+
+    background:
+        linear-gradient(rgba(15,23,42,.85),
+        rgba(30,64,175,.85)),
+        url("https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=80");
+
+    background-size:cover;
+    background-position:center;
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.left-content{
+    width:75%;
+    z-index:2;
+}
+
+.logo-circle{
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+    background:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    margin-bottom:30px;
+}
+
+.logo-circle i{
+    font-size:40px;
+    color:#2563eb;
+}
+
+.left-content h1{
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.left-content p{
+    font-size:18px;
+    opacity:.9;
+    margin-bottom:40px;
+    line-height:1.7;
+}
+
+.features{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.feature{
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    font-size:18px;
+}
+
+.feature i{
+    font-size:24px;
+}
+
+/* RIGHT */
+
+.auth-right{
+    width:520px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#f8fafc;
+}
+
+.form-card{
+
+    width:420px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:45px;
+
+    box-shadow:
+    0 10px 35px rgba(0,0,0,.08);
+}
+
+.form-card h2{
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.form-card p{
+    color:#64748b;
+}
+
+.form-control{
+    height:52px;
+}
+
+.btn-primary{
+    height:52px;
+    font-weight:600;
+}
+
+.password-wrapper{
+    position:relative;
+}
+
+.password-wrapper i{
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    cursor:pointer;
+
+    color:#64748b;
+}
+
+@media(max-width:992px){
+
+    .auth-left{
+        display:none;
+    }
+
+    .auth-right{
+        width:100%;
+    }
+
+    .form-card{
+        width:90%;
+    }
+
+}

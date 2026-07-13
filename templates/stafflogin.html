@@ -1,0 +1,97 @@
+{% extends "loginbase.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block auth_content %}
+
+<div class="login-card">
+
+    <h2 class="text-center mb-4">Welcome Back</h2>
+
+    <div class="mb-4">
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary w-50">
+                Admin Login
+            </a>
+
+            <a href="{{ url_for('staff_login') }}" class="btn btn-primary w-50">
+                Staff Login
+            </a>
+        </div>
+    </div>
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+                type="email"
+                name="email"
+                class="form-control"
+                placeholder="Enter your email"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+
+            <div class="password-wrapper">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    placeholder="Enter your password"
+                    required>
+
+                <i class="bi bi-eye-slash" id="togglePassword"></i>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="text-end mb-3">
+            <a href="{{ url_for('forgot_password') }}" class="forgot-link">
+                Forgot Password?
+            </a>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            Login
+        </button>
+
+    </form>
+
+    <p class="text-center mt-4">
+        Don't have an account?
+        <a href="{{ url_for('register') }}">Register here</a>
+    </p>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const togglePassword = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+togglePassword.addEventListener("click", function () {
+
+    if(password.type === "password"){
+        password.type = "text";
+        this.classList.replace("bi-eye-slash", "bi-eye");
+    }else{
+        password.type = "password";
+        this.classList.replace("bi-eye", "bi-eye-slash");
+    }
+
+});
+</script>
+{% endblock %}

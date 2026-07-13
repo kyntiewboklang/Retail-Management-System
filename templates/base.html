@@ -23,9 +23,58 @@
     <a href="#"><i class="bi bi-cart-check"></i> Orders</a>
     <!-- <a href="#"><i class="bi bi-upc-scan"></i> Barcode Scanner</a> -->
     <a href="#"><i class="bi bi-people"></i> Customers</a>
+    <div class="mt-2">
+
+        <a class="nav-link text-white"
+        data-bs-toggle="collapse"
+        href="#recruitmentMenu"
+        role="button"
+        aria-expanded="false">
+
+            <i class="bi bi-person-workspace"></i>
+
+            Recruitment
+
+            <i class="bi bi-chevron-down float-end"></i>
+
+        </a>
+
+        <div class="collapse" id="recruitmentMenu">
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/job_vacancies">
+
+                <i class="bi bi-briefcase"></i>
+
+                Job Vacancies
+
+            </a>
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/applications">
+
+                <i class="bi bi-person-lines-fill"></i>
+
+                Applicants
+
+            </a>
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/interviews">
+
+                <i class="bi bi-calendar-event"></i>
+
+                Interviews
+
+            </a>
+
+        </div>
+
+    </div>
     <a href="/admin/staff"><i class="bi bi-person-badge"></i> Staff</a>
-    <a href="#"><i class="bi bi-graph-up-arrow"></i> Reports</a>
+    <a href="/admin/reports"><i class="bi bi-graph-up-arrow"></i> Reports</a>
     <a href="#"><i class="bi bi-gear"></i> Settings</a>
+    <a href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
 
     </div>
 
@@ -61,6 +110,8 @@ function showViewProducts(){
 }
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

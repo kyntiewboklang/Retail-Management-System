@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <div class="text-center mb-4">
+
+        <h2 class="fw-bold">
+
+            <i class="bi bi-person-vcard-fill text-primary"></i>
+
+            Applicant Review
+
+        </h2>
+
+    </div>
+
+    <div class="row">
+
+        <!-- Applicant Information -->
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0">
+
+                        Applicant Information
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Full Name</strong>
+
+                            <p>{{ application[1] }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Email</strong>
+
+                            <p>{{ application[2] }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Phone</strong>
+
+                            <p>{{ application[3] }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Position Applied</strong>
+
+                            <p>{{ application[10] }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Department</strong>
+
+                            <p>{{ application[11] }}</p>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>Expected Salary</strong>
+
+                            <p>₹{{ application[12] }}</p>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <strong>Address</strong>
+
+                    <p>{{ application[4] }}</p>
+
+                    <hr>
+
+                    <strong>Qualification</strong>
+
+                    <p>{{ application[5] }}</p>
+
+                    <hr>
+
+                    <strong>Experience</strong>
+
+                    <p>{{ application[6] }}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right Side -->
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+
+                    <h5>
+
+                        Application Status
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body text-center">
+
+                    <h4>
+
+                        <span class="badge bg-warning">
+
+                            {{ application[8] }}
+
+                        </span>
+
+                    </h4>
+
+                    <hr>
+
+                    <a
+
+                    href="{{ url_for('static', filename='uploads/resumes/' + application[7]) }}"
+
+                    target="_blank"
+
+                    class="btn btn-primary w-100 mb-3">
+
+                        <i class="bi bi-file-earmark-pdf"></i>
+
+                        View Resume
+
+                    </a>
+
+                    <a
+                    href="/admin/schedule_interview/{{ application[0] }}"
+                    class="btn btn-info w-100">
+
+                    Schedule Interview
+
+                    </a>
+
+                    <button
+
+                    class="btn btn-success w-100 mb-3">
+
+                        Hire Applicant
+
+                    </button>
+
+                    <button
+
+                    class="btn btn-danger w-100">
+
+                        Reject Applicant
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

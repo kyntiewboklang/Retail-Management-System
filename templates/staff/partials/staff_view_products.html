@@ -1,0 +1,153 @@
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <input
+                    type="text"
+                    class="form-control search-box"
+                    placeholder="Search by Product Name, SKU or Barcode">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <button class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i>
+                    Search
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow">
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover table-striped align-middle">
+
+                <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>SKU</th>
+                    <th>Barcode</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if products %}
+
+                    {% for product in products %}
+
+                    <tr>
+
+                        <td>
+                            <strong>#{{ product[0] }}</strong>
+                        </td>
+
+                        <td>
+                            <strong>{{ product[1] }}</strong>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                {{ product[2] }}
+                            </span>
+                        </td>
+
+                        <td>{{ product[3] }}</td>
+
+                        <td>
+                            <code>{{ product[4] }}</code>
+                        </td>
+
+                        <td>
+                            <code>{{ product[5] }}</code>
+                        </td>
+
+                        <td>
+                            <strong class="text-success">
+                                ₹{{ "%.2f"|format(product[6]) }}
+                            </strong>
+                        </td>
+
+                        <td>
+
+                            {% if product[7] is none %}
+
+                                <span class="badge bg-secondary">
+                                    N/A
+                                </span>
+
+                            {% elif product[7] <= 10 %}
+
+                                <span class="badge bg-danger">
+                                    {{ product[7] }}
+                                </span>
+
+                            {% elif product[7] <= 25 %}
+
+                                <span class="badge bg-warning text-dark">
+                                    {{ product[7] }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-success">
+                                    {{ product[7] }}
+                                </span>
+
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="9" class="text-center py-5">
+
+                            <h5>No products found</h5>
+
+                            <p class="text-muted">
+                                Click <strong>Add Product</strong> to create your first product.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

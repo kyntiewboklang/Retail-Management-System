@@ -19,9 +19,10 @@
     <h3><i class="bi bi-shop"></i> Store</h3>
 
     <a href="/staff/staff_dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-    <a href="/admin/products"><i class="bi bi-box-seam"></i> Products</a>
+    <a href="/staff/staff_products"><i class="bi bi-box-seam"></i> Products</a>
     <!-- <a href="#"><i class="bi bi-upc-scan"></i> Barcode Scanner</a> -->
     <a href="#"><i class="bi bi-gear"></i> Settings</a>
+    <a href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a>
 
     </div>
 
@@ -32,30 +33,14 @@
 
 <script>
 
-function showAddProduct(){
+function showViewProducts() {
 
-    document.getElementById("add-product").style.display = "block";
-    document.getElementById("view-products").style.display = "none";
-
-    document.getElementById("btnAdd").classList.remove("btn-outline-success");
-    document.getElementById("btnAdd").classList.add("btn-success");
-
-    document.getElementById("btnView").classList.remove("btn-primary");
-    document.getElementById("btnView").classList.add("btn-outline-primary");
-}
-
-function showViewProducts(){
-
-    document.getElementById("add-product").style.display = "none";
     document.getElementById("view-products").style.display = "block";
 
     document.getElementById("btnView").classList.remove("btn-outline-primary");
     document.getElementById("btnView").classList.add("btn-primary");
 
-    document.getElementById("btnAdd").classList.remove("btn-success");
-    document.getElementById("btnAdd").classList.add("btn-outline-success");
 }
-
 </script>
 
 </body>

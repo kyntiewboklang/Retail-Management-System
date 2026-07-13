@@ -80,4 +80,64 @@ setTimeout(function () {
 }, 3000);
 </script>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="{{ url_for('static', filename='js/admin_scanner.js') }}"></script>
+
+<script>
+function generateSKU(){
+
+    const date = new Date();
+
+    const year = date.getFullYear();
+
+    const random = Math.floor(Math.random()*9000)+1000;
+
+    document.getElementById("sku").value =
+        "SKU-" + year + "-" + random;
+
+}
+
+function generateBarcode(){
+
+    let barcode="";
+
+    for(let i=0;i<13;i++){
+
+        barcode += Math.floor(Math.random()*10);
+
+    }
+
+    document.getElementById("barcode").value=barcode;
+
+    fetch("/generate_barcode/"+barcode)
+
+    .then(r=>r.text())
+
+    .then(path=>{
+
+        const img=document.getElementById("barcodeImage");
+
+        img.src="/"+path;
+
+        img.style.display="block";
+
+    });
+
+}
+
+function printBarcode(){
+
+    const w=window.open("");
+
+    w.document.write(
+
+        document.getElementById("barcodeImage").outerHTML
+
+    );
+
+    w.print();
+
+}
+</script>
+
 {% endblock %}

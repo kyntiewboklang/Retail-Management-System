@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Retail Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <div class="login-card">
+
+        <!-- Login Options -->
+        <div id="login-options">
+
+            <h1 class="text-center mb-4">
+                Retail Management System
+            </h1>
+
+            <h3 class="text-center mb-5">
+                Login Options
+            </h3>
+
+            <button
+                class="btn btn-primary w-100 mb-3"
+                onclick="showAdminLogin()">
+
+                <i class="bi bi-person-workspace"></i>
+                Admin Login
+
+            </button>
+
+            <button
+                class="btn btn-success w-100"
+                onclick="showStaffLogin()">
+
+                <i class="bi bi-person-badge"></i>
+                Staff Login
+
+            </button>
+
+        </div>
+
+
+        <!-- Admin Login -->
+        <div id="admin-login" style="display:none;">
+
+            <a href="#"
+                class="back-btn"
+                onclick="showOptions(); return false;">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+
+            </a>
+
+            {% include "admin/partials/admin_login.html" %}
+
+        </div>
+
+
+        <!-- Staff Login -->
+        <div id="staff-login" style="display:none;">
+
+            <a href="#"
+                class="back-btn"
+                onclick="showOptions(); return false;">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Back
+
+            </a>
+
+            {% include "staff/partials/staff_login.html" %}
+
+        </div>
+
+        {% if not admin_exists %}
+
+        <p class="text-center mt-4">
+
+            Don't have an admin account?
+
+            <a href="{{ url_for('register') }}">
+                Register here
+            </a>
+
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+
+function showAdminLogin(){
+
+    document.getElementById("login-options").style.display = "none";
+    document.getElementById("admin-login").style.display = "block";
+    document.getElementById("staff-login").style.display = "none";
+
+}
+
+function showStaffLogin(){
+
+    document.getElementById("login-options").style.display = "none";
+    document.getElementById("admin-login").style.display = "none";
+    document.getElementById("staff-login").style.display = "block";
+
+}
+
+function showOptions(){
+
+    document.getElementById("login-options").style.display = "block";
+    document.getElementById("admin-login").style.display = "none";
+    document.getElementById("staff-login").style.display = "none";
+
+}
+
+</script>
+
+</body>
+
+</html>

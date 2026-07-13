@@ -190,3 +190,23 @@ body{
     text-align:center;
     color:#6c757d;
 }
+
+/*scanner*/
+#reader{
+
+    width:450px;
+    max-width:100%;
+    margin:auto;
+
+    border:4px solid #0d6efd;
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+#reader video{
+
+    border-radius:16px;
+
+}

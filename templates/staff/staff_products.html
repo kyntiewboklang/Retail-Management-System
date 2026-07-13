@@ -1,0 +1,46 @@
+{% extends "staff/staff_base.html" %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h3>Product Inventory</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div id="view-products" style="display:block;">
+
+                {% include "staff/partials/staff_view_products.html" %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="{{ url_for('static', filename='js/admin_scanner.js') }}"></script>
+
+{% endblock %}

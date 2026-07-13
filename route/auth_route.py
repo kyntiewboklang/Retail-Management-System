@@ -7,6 +7,8 @@ from flask import (
     flash
 )
 
+import re
+
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
@@ -122,7 +124,7 @@ def register_auth_routes(app, mail):
             email = request.form["email"].strip().lower()
             password = request.form["password"]
             confirm_password = request.form["confirm_password"]
-
+    
             # Check password confirmation
             if password != confirm_password:
                 return render_template(
@@ -156,20 +158,26 @@ def register_auth_routes(app, mail):
                     error="Email already exists. Please use another email."
                 )
 
-            # (Optional) Check if username already exists
+            #  Check if username already exists
             cursor.execute(
                 "SELECT id FROM users WHERE username = %s",
                 (username,)
             )
             username_exists = cursor.fetchone()
 
-            if username_exists:
+            cursor.execute(
+                "SELECT id FROM staff WHERE username = %s",
+                (username,)
+            )
+            staff_username_exists = cursor.fetchone()
+
+            if username_exists or staff_username_exists:
                 cursor.close()
                 conn.close()
 
                 return render_template(
                     "register.html",
-                    error="Username already exists."
+                    error="Username already taken, try another one."
                 )
 
             hashed_password = generate_password_hash(password)

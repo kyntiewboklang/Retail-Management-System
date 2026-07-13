@@ -12,4 +12,4 @@ def register_staff_dashboard_route(app):
         if session.get("role") != "staff":
             return redirect("/login")
 
-        return render_template("staff/dashboard.html")
+        return render_template("staff/dashboard.html") 

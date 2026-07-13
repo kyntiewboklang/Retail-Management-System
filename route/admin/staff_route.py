@@ -6,6 +6,8 @@ from flask import (
     flash
 )
 
+import re
+
 from werkzeug.security import generate_password_hash
 
 from database import get_db_connection
@@ -58,10 +60,55 @@ def register_staff_routes(app):
             phone = request.form["phone"]
             password = request.form["password"]
 
-            hashed_password = generate_password_hash(password)
-
             conn = get_db_connection()
             cursor = conn.cursor()
+
+            
+            cursor.execute(
+                "SELECT id FROM users WHERE email = %s",
+                (email,)
+            )
+            user_exists = cursor.fetchone()
+
+            # Check if email already exists in staff table
+            cursor.execute(
+                "SELECT id FROM staff WHERE email = %s",
+                (email,)
+            )
+            staff_exists = cursor.fetchone()
+
+            if user_exists or staff_exists:
+                cursor.close()
+                conn.close()
+
+                return render_template(
+                    "admin/add_staff.html",
+                    error="Email already exists. Please use another email."
+                )
+
+            #  Check if username already exists
+            cursor.execute(
+                "SELECT id FROM users WHERE username = %s",
+                (username,)
+            )
+            username_exists = cursor.fetchone()
+
+            cursor.execute(
+                "SELECT id FROM staff WHERE username = %s",
+                (username,)
+            )
+            staff_username_exists = cursor.fetchone()
+
+            if username_exists or staff_username_exists:
+                cursor.close()
+                conn.close()
+
+                return render_template(
+                    "admin/add_staff.html",
+                    error="Username already taken, try another one."
+                )
+
+            hashed_password = generate_password_hash(password)
 
             cursor.execute("""
                 INSERT INTO staff

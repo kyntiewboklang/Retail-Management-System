@@ -28,15 +28,12 @@ def register_auth_routes(app, mail):
 
         if request.method == "POST":
 
-            email = request.form["email"]
+            email = request.form["email"].strip().lower()
             password = request.form["password"]
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
-            # ==========================
-            # Check Admin
-            # ==========================
             cursor.execute("""
                 SELECT
                     id,
@@ -50,6 +47,9 @@ def register_auth_routes(app, mail):
 
             admin = cursor.fetchone()
 
+            cursor.close()
+            conn.close()
+
             if admin and check_password_hash(admin[3], password):
 
                 session.clear()
@@ -57,16 +57,27 @@ def register_auth_routes(app, mail):
                 session["user_id"] = admin[0]
                 session["username"] = admin[1]
                 session["email"] = admin[2]
-                session["role"] = "admin"
-
-                cursor.close()
-                conn.close()
+                session["role"] = admin[4]
 
                 return redirect("/admin/dashboard")
 
-            # ==========================
-            # Check Staff
-            # ==========================
+            return render_template(
+                "login.html",
+                error="Invalid email or password."
+            )
+
+        return render_template("login.html")
+    
+    @app.route("/stafflogin", methods=["GET", "POST"])
+    def staff_login():
+        if request.method == "POST":
+
+            email = request.form["email"].strip().lower()
+            password = request.form["password"]
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
             cursor.execute("""
                 SELECT
                     id,
@@ -95,32 +106,83 @@ def register_auth_routes(app, mail):
 
                 return redirect("/staff/dashboard")
 
-            return "Invalid email or password"
+            return render_template(
+                "stafflogin.html",
+                error="Invalid email or password."
+            )
+        return render_template("stafflogin.html")
 
-        return render_template("login.html")
-    
+
     @app.route("/register", methods=["GET", "POST"])
     def register():
 
         if request.method == "POST":
 
-            username = request.form["username"]
-            email = request.form["email"]
+            username = request.form["username"].strip()
+            email = request.form["email"].strip().lower()
             password = request.form["password"]
             confirm_password = request.form["confirm_password"]
 
+            # Check password confirmation
             if password != confirm_password:
-                return "Passwords do not match!"
-
-            hashed_password = generate_password_hash(password)
+                return render_template(
+                    "register.html",
+                    error="Passwords do not match!"
+                )
 
             conn = get_db_connection()
             cursor = conn.cursor()
 
+            # Check if email already exists in users table
+            cursor.execute(
+                "SELECT id FROM users WHERE email = %s",
+                (email,)
+            )
+            user_exists = cursor.fetchone()
+
+            # Check if email already exists in staff table
+            cursor.execute(
+                "SELECT id FROM staff WHERE email = %s",
+                (email,)
+            )
+            staff_exists = cursor.fetchone()
+
+            if user_exists or staff_exists:
+                cursor.close()
+                conn.close()
+
+                return render_template(
+                    "register.html",
+                    error="Email already exists. Please use another email."
+                )
+
+            # (Optional) Check if username already exists
+            cursor.execute(
+                "SELECT id FROM users WHERE username = %s",
+                (username,)
+            )
+            username_exists = cursor.fetchone()
+
+            if username_exists:
+                cursor.close()
+                conn.close()
+
+                return render_template(
+                    "register.html",
+                    error="Username already exists."
+                )
+
+            hashed_password = generate_password_hash(password)
+
             cursor.execute("""
-                INSERT INTO users(username, email, password, role)
+                INSERT INTO users (username, email, password, role)
                 VALUES (%s, %s, %s, %s)
-            """, (username, email, hashed_password, "admin"))
+            """, (
+                username,
+                email,
+                hashed_password,
+                "admin"
+            ))
 
             conn.commit()
 

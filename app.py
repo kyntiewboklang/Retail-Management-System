@@ -25,7 +25,6 @@ register_order_routes(app)
 register_staff_routes(app)
 register_settings_routes(app)
 register_staff_dashboard_route(app)
-
 @app.route("/")
 def home():
     return redirect("/login")

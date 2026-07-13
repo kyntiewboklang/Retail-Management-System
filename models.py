@@ -31,6 +31,7 @@ def create_products_table():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products(
             id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             product_name VARCHAR(255) NOT NULL,
             category VARCHAR(100),
             brand VARCHAR(100),

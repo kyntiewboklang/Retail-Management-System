@@ -9,6 +9,7 @@ from route.admin.order_route import register_order_routes
 from route.admin.staff_route import register_staff_routes
 from route.admin.settings_route import register_settings_routes
 from route.staff.staff_dashboard_route import register_staff_dashboard_route
+from route.staff.staff_new_order_route import register_staff_new_orders_route
 
 from flask_mail import Mail
 
@@ -25,6 +26,9 @@ register_order_routes(app)
 register_staff_routes(app)
 register_settings_routes(app)
 register_staff_dashboard_route(app)
+register_staff_new_orders_route(app)
+
+
 @app.route("/")
 def home():
     return redirect("/login")

@@ -1,94 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Departmental Store</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Department Store</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 
 </head>
 
 <body>
 
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="/">
+
+            🛒 Department Store
+
+        </a>
+
+        <button
+            class="navbar-toggler"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbar">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div
+            class="collapse navbar-collapse"
+            id="navbar">
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="/">
+
+                        Home
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="#about">
+
+                        About
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="/careers">
+
+                        Careers
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="#contact">
+
+                        Contact
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item ms-3">
+
+                    {% if admin_exists %}
+
+                    <a href="/login"
+                       class="btn btn-light">
+
+                        Login
+
+                    </a>
+
+                    {% else %}
+
+                    <a href="/register"
+                       class="btn btn-warning">
+
+                        Create Admin
+
+                    </a>
+
+                    {% endif %}
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+    <!-- Hero -->
+<section class="hero">
+
+    <div class="hero-overlay">
+
+        <div class="container text-center">
+
+            <h1 class="display-3 fw-bold">
+
+                Welcome to Department Store
+
+            </h1>
+
+            <p class="lead mt-4">
+
+                Your trusted destination for quality products,
+                excellent customer service and career opportunities.
+
+            </p>
+
+            <div class="mt-4">
+
+                {% if admin_exists %}
+
+                <a href="/login"
+                   class="btn btn-primary btn-lg me-3">
+
+                    <i class="bi bi-box-arrow-in-right"></i>
+
+                    Employee Login
+
+                </a>
+
+                {% else %}
+
+                <a href="/register"
+                   class="btn btn-warning btn-lg me-3">
+
+                    Create Admin
+
+                </a>
+
+                {% endif %}
+
+                <a href="/careers"
+                   class="btn btn-success btn-lg">
+
+                    <i class="bi bi-briefcase-fill"></i>
+
+                    Careers
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="position-absolute bottom-0 start-50 translate-middle-x mb-4">
+
+        <a href="#why">
+
+            <i class="bi bi-chevron-double-down
+                    text-white
+                    fs-1"></i>
+
+        </a>
+
+    </div>
+
+</section>
+
+    <!-- Why Choose Us -->
+<section id="why" class="container py-5">
+
+    <h2 class="text-center mb-5">
+
+        Why Choose Us
+
+    </h2>
+
+    <div class="row text-center">
+
+        <div class="col-md-3">
+
+            <i class="bi bi-cart-check display-4 text-primary"></i>
+
+            <h5 class="mt-3">
+
+                Quality Products
+
+            </h5>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <i class="bi bi-lightning-charge display-4 text-success"></i>
+
+            <h5 class="mt-3">
+
+                Fast Checkout
+
+            </h5>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <i class="bi bi-people display-4 text-warning"></i>
+
+            <h5 class="mt-3">
+
+                Professional Staff
+
+            </h5>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <i class="bi bi-shield-lock display-4 text-danger"></i>
+
+            <h5 class="mt-3">
+
+                Secure Inventory
+
+            </h5>
+
+        </div>
+
+    </div>
+
+</section>
+    <!-- Careers -->
 
 
-<div class="topbar">
 
-    <div class="dropdown profile">
-
-    <span class="username">
-        Welcome, {{ session.get('username') }}
-    </span>
-
-    <button class="profile-icon border-0"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false">
-
-        <i class="bi bi-gear-fill"></i>
-
-    </button>
-
-    <ul class="dropdown-menu dropdown-menu-end shadow">
-
-        <li class="dropdown-header">
-            <small>{{ session.get('email') }}</small>
-        </li>
-
-        <li><hr class="dropdown-divider"></li>
-
-        <li>
-            <a class="dropdown-item" href="{{ url_for('change_password') }}">
-                <i class="bi bi-lock"></i>
-                Change Password
-            </a>
-        </li>
-
-        <li>
-            <a class="dropdown-item" href="{{ url_for('change_email') }}">
-                <i class="bi bi-envelope"></i>
-                Change Email
-            </a>
-        </li>
-
-        <li>
-            <a class="dropdown-item" href="{{ url_for('delete_account') }}"
-            onclick="return confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')">
-                <i class="bi bi-trash-fill"></i>
-                Delete Account
-            </a>
-        </li>
-
-        <li><hr class="dropdown-divider"></li>
-
-        <li>
-            <a class="dropdown-item text-danger"
-               href="{{ url_for('logout') }}">
-                <i class="bi bi-box-arrow-right"></i>
-                Logout
-            </a>
-        </li>
-
-    </ul>
-
-</div>
-
-</div>
+    <!-- Footer -->
 
 
-<div class="content">
 
-{% block content %}
-{% endblock %}
-
-</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>

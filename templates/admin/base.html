@@ -90,8 +90,56 @@
     <a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
     <a href="/admin/add_product"><i class="bi bi-box-seam"></i> Add Products</a>
     <a href="/admin/available_stock"><i class="bi bi-cart-check"></i>Available Stocks</a>
-    <a href="/admin/staff"><i class="bi bi-person-badge"></i> Staff</a>
-    <a href="#"><i class="bi bi-graph-up-arrow"></i> Reports</a>
+    <div class="mt-2">
+
+        <a class="nav-link text-white"
+        data-bs-toggle="collapse"
+        href="#recruitmentMenu"
+        role="button"
+        aria-expanded="false">
+
+            <i class="bi bi-person-workspace"></i>
+
+            Recruitment
+
+            <i class="bi bi-chevron-down float-end"></i>
+
+        </a>
+
+        <div class="collapse" id="recruitmentMenu">
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/job_vacancies">
+
+                <i class="bi bi-briefcase"></i>
+
+                Job Vacancies
+
+            </a>
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/applications">
+
+                <i class="bi bi-person-lines-fill"></i>
+
+                Applicants
+
+            </a>
+
+            <a class="nav-link text-white ps-4"
+            href="/admin/interviews">
+
+                <i class="bi bi-calendar-event"></i>
+
+                Interviews
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <a href="/admin/reports"><i class="bi bi-graph-up-arrow"></i> Reports</a>
     <div class="mt-auto pt-4 border-top">
 
         <a href="/admin/settings">

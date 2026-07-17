@@ -17,36 +17,39 @@
                     <form action="{{ url_for('add_product') }}" method="POST">
 
                         <div class="mb-3">
-                            <label class="form-label">Product Name</label>
+                            <label for="product_name" class="form-label">Product Name</label>
                             <input
                                 type="text"
-                                id="product_name"
                                 class="form-control"
+                                id="product_name"
                                 name="product_name"
+                                placeholder="Enter product name"
                                 required>
                         </div>
 
                         <div class="row">
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Category</label>
-                                <select id="category" class="form-select" name="category" required>
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Electronics">Electronics</option>
-                                    <option value="Clothing">Clothing</option>
-                                    <option value="Home & Kitchen">Home & Kitchen</option>
-                                    <option value="Beauty">Beauty</option>
-                                    <option value="Sports">Sports</option>
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option selected disabled>Select Category</option>
+                                    <option>Electronics</option>
+                                    <option>Groceries</option>
+                                    <option>Clothing</option>
+                                    <option>Home & Kitchen</option>
+                                    <option>Beauty</option>
+                                    <option>Sports</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Brand</label>
+                                <label for="brand" class="form-label">Brand</label>
                                 <input
                                     type="text"
-                                    id="brand"
                                     class="form-control"
-                                    name="brand">
+                                    id="brand"
+                                    name="brand"
+                                    placeholder="Brand Name">
                             </div>
 
                         </div>
@@ -54,76 +57,152 @@
                         <div class="row">
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Price ($)</label>
+                                <label for="price" class="form-label">Price (₹)</label>
                                 <input
-                                    id="price"
                                     type="number"
-                                    step="0.01"
+                                    step="0"
                                     class="form-control"
+                                    id="price"
                                     name="price"
                                     required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Quantity</label>
+                                <label for="quantity" class="form-label">Quantity</label>
                                 <input
-                                    id="quantity"
                                     type="number"
                                     class="form-control"
+                                    id="quantity"
                                     name="quantity"
                                     required>
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">SKU / Barcode</label>
+
+                                <label for="sku" class="form-label">SKU</label>
+
+                                <div class="input-group">
+
+                                    <input
+                                        type="text"
+                                        id="sku"
+                                        name="sku"
+                                        class="form-control"
+                                        >
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        onclick="generateSKU()">
+
+                                        Generate
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label for="manufacture_date" class="form-label">Manufacture Date</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     class="form-control"
-                                    id="sku"
-                                    name="sku"
-                                    placeholder="Scan or enter barcode">
+                                    id="manufacture_date"
+                                    name="manufacture_date">
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="expiry_date" class="form-label">Expiry Date</label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    id="expiry_date"
+                                    name="expiry_date">
                             </div>
 
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Supplier</label>
+                            <label for="supplier" class="form-label">Supplier</label>
                             <input
-                                id="suppliers"
                                 type="text"
                                 class="form-control"
-                                name="supplier">
+                                id="supplier"
+                                name="supplier"
+                                placeholder="Supplier Name">
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea
-                                id="description"
-                                class="form-control"
-                                rows="4"
-                                name="description"></textarea>
+                        <div class="row">
+
+                                <div class="row align-items-end">
+
+                                    <div class="col-md-8">
+
+                                        <label class="form-label">
+
+                                            Barcode
+
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="text"
+                                                id="barcode"
+                                                name="barcode"
+                                                class="form-control"
+                                                >
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-success"
+                                                onclick="generateBarcode()">
+
+                                                Generate
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-4">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-dark w-100"
+                                            onclick="printBarcode()">
+
+                                            Print Barcode
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between">
 
-                            <button
-                                type="button"
-                                id="clearForm"
-                                class="btn btn-secondary">
-                                Cancel
-                            </button>
+                        <button
+                            type="button"
+                            id="clearForm"
+                            class="btn btn-secondary">
+                            Cancel
+                        </button>
 
-                            <button class="btn btn-success">
-                                Save Product
-                            </button>
+                        <button class="btn btn-success">
+                            Save Product
+                        </button>
 
-                        </div>
-
-                    </form>
-
-                </div>
+                    </div>
             </div>
-
         </div>
 
         <!-- Scanner Panel -->
@@ -150,12 +229,13 @@
 
                     <div class="d-grid gap-2 mt-3">
 
-                        <button
-                            class="btn btn-primary"
-                            id="startCamera"
-                            type="button">
-                            📷 Use Camera
-                        </button>
+                        <div class="mb-3">
+                            <label class="form-label">Select Camera</label>
+
+                            <select id="cameraSelect" class="form-select">
+                                <option value="">Loading cameras...</option>
+                            </select>
+                        </div>
 
                         <button
                             class="btn btn-danger"
@@ -193,4 +273,62 @@
 
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script src="{{ url_for('static', filename='js/add_product_scanner.js') }}"></script>
+
+<script>
+function generateSKU(){
+
+    const date = new Date();
+
+    const year = date.getFullYear();
+
+    const random = Math.floor(Math.random()*9000)+1000;
+
+    document.getElementById("sku").value =
+        "SKU-" + year + "-" + random;
+
+}
+
+function generateBarcode(){
+
+    let barcode="";
+
+    for(let i=0;i<13;i++){
+
+        barcode += Math.floor(Math.random()*10);
+
+    }
+
+    document.getElementById("barcode").value=barcode;
+
+    fetch("/generate_barcode/"+barcode)
+
+    .then(r=>r.text())
+
+    .then(path=>{
+
+        const img=document.getElementById("barcodeImage");
+
+        img.src="/"+path;
+
+        img.style.display="block";
+
+    });
+
+}
+
+function printBarcode(){
+
+    const w=window.open("");
+
+    w.document.write(
+
+        document.getElementById("barcodeImage").outerHTML
+
+    );
+
+    w.print();
+
+}
+</script>
+
 {% endblock %}

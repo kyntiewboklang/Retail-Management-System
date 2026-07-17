@@ -93,8 +93,15 @@ def register_auth_routes(app, mail):
 
             staff = cursor.fetchone()
 
+            print("Staff record:", staff)
+
             cursor.close()
             conn.close()
+
+            if staff:
+                print("Entered Password:", password)
+                print("Stored Hash:", staff[4])
+                print("Password Match:", check_password_hash(staff[4], password))
 
             if staff and check_password_hash(staff[4], password):
 
@@ -106,7 +113,7 @@ def register_auth_routes(app, mail):
                 session["email"] = staff[3]
                 session["role"] = "staff"
 
-                return redirect("/staff/dashboard")
+                return redirect("/staff/staff_dashboard")
 
             return render_template(
                 "stafflogin.html",
@@ -206,7 +213,8 @@ def register_auth_routes(app, mail):
     @app.route("/logout")
     def logout():
         session.clear()
-        return redirect("/login")
+        return redirect(url_for("home"))
+    
 
     @app.route('/forgot-password', methods=['GET', 'POST'])
     def forgot_password():

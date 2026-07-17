@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, session, url_for, flash
 from database import get_db_connection
 from config import Config
-from models import create_products_table, create_users_table, create_orders_table, create_order_items_table, create_staff_table
+from models import create_products_table, create_users_table, create_orders_table, create_order_items_table, create_staff_table, create_table
 from route.admin.dashboard_route import register_dashboard_routes
 from route.admin.product_route import register_product_routes
 from route.auth_route import register_auth_routes
@@ -9,6 +9,10 @@ from route.admin.order_route import register_order_routes
 from route.admin.staff_route import register_staff_routes
 from route.admin.settings_route import register_settings_routes
 from route.staff.staff_dashboard_route import register_staff_dashboard_route
+from route.admin.recruitment_route import recruitment_route
+from route.apply_job import apply_job
+from route.admin.report_route import report_route
+
 
 from flask_mail import Mail
 
@@ -18,6 +22,10 @@ app.config.from_object(Config)
 
 mail = Mail(app)
 
+UPLOAD_FOLDER = "static/uploads/resumes"
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 register_dashboard_routes(app)
 register_product_routes(app)
 register_auth_routes(app, mail)
@@ -25,11 +33,47 @@ register_order_routes(app)
 register_staff_routes(app)
 register_settings_routes(app)
 register_staff_dashboard_route(app)
+recruitment_route(app, mail)
+apply_job(app)
+report_route(app)
+
 @app.route("/")
 def home():
-    return redirect("/login")
+    return render_template("index.html", admin_exists=admin_exists())
+def admin_exists():
+    conn = get_db_connection()
+    cur = conn.cursor()
 
+    cur.execute("SELECT COUNT(*) FROM users WHERE role = %s", ("admin",))
+    count = cur.fetchone()[0]
 
+    cur.close()
+    conn.close()
+
+    return count > 0
+
+@app.route("/careers")
+def careers():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM job_vacancies
+        WHERE status='Open'
+        ORDER BY created_at DESC
+    """)
+
+    jobs = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "careers.html",
+        jobs=jobs
+    )
 
 @app.route("/change-email", methods=["GET", "POST"])
 def change_email():
@@ -132,5 +176,6 @@ if __name__ == "__main__":
     create_orders_table()
     create_order_items_table()
     create_staff_table()
+    create_table()
     app.run(host="0.0.0.0", port=5000, debug=True)
 

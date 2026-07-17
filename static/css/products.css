@@ -1,0 +1,184 @@
+/* ==========================================
+   PRODUCT MANAGEMENT
+========================================== */
+
+body{
+    background:#f4f7fb;
+}
+
+/* Page Title */
+
+.page-title{
+    font-size:34px;
+    font-weight:700;
+    color:#212529;
+    margin-bottom:20px;
+}
+
+/* Button Section */
+
+.product-actions{
+    margin-bottom:25px;
+}
+
+.product-actions .btn{
+    border-radius:10px;
+    padding:10px 22px;
+    font-weight:600;
+    transition:.25s;
+}
+
+.product-actions .btn:hover{
+    transform:translateY(-2px);
+}
+
+/* Search */
+
+.search-box{
+    border-radius:10px;
+    height:48px;
+    border:1px solid #dee2e6;
+    box-shadow:none;
+}
+
+.search-box:focus{
+    box-shadow:0 0 0 .2rem rgba(13,110,253,.15);
+}
+
+/* Card */
+
+.product-card{
+    background:#fff;
+    border:none;
+    border-radius:18px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.product-card .card-header{
+    background:white;
+    border-bottom:1px solid #ececec;
+    padding:20px 30px;
+}
+
+.product-card .card-header h4{
+    margin:0;
+    font-weight:700;
+    color:#212529;
+}
+
+.product-card .card-body{
+    padding:25px;
+}
+
+/* Table */
+
+.table{
+    margin:0;
+}
+
+.table thead th{
+    border:none;
+    background:#f8f9fb;
+    color:#495057;
+    padding:18px;
+    font-size:15px;
+    font-weight:600;
+}
+
+.table tbody td{
+    padding:18px;
+    vertical-align:middle;
+    border-top:1px solid #edf0f2;
+}
+
+.table tbody tr{
+    transition:.25s;
+}
+
+.table tbody tr:hover{
+    background:#f8fbff;
+}
+
+/* Product Name */
+
+.product-name{
+    font-weight:600;
+    color:#212529;
+}
+
+/* Category */
+
+.category-badge{
+    background:#e8f4ff;
+    color:#0d6efd;
+    padding:6px 15px;
+    border-radius:30px;
+    font-size:13px;
+}
+
+/* Price */
+
+.product-price{
+    color:#198754;
+    font-weight:700;
+    font-size:17px;
+}
+
+/* Stock */
+
+.stock-high{
+    background:#198754;
+    color:white;
+    padding:6px 14px;
+    border-radius:20px;
+}
+
+.stock-medium{
+    background:#ffc107;
+    color:#212529;
+    padding:6px 14px;
+    border-radius:20px;
+}
+
+.stock-low{
+    background:#dc3545;
+    color:white;
+    padding:6px 14px;
+    border-radius:20px;
+}
+
+/* Buttons */
+
+.btn-edit{
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:6px 16px;
+}
+
+.btn-edit:hover{
+    background:#0b5ed7;
+    color:white;
+}
+
+.btn-delete{
+    background:#dc3545;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:6px 16px;
+}
+
+.btn-delete:hover{
+    background:#bb2d3b;
+    color:white;
+}
+
+/* Empty */
+
+.empty-products{
+    text-align:center;
+    padding:60px;
+    color:#6c757d;
+}

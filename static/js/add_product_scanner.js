@@ -2,6 +2,8 @@ console.log("Scanner JS Loaded");
 
 const codeReader = new ZXing.BrowserMultiFormatReader();
 
+const cameraSelect = document.getElementById("cameraSelect");
+
 let selectedDeviceId = null;
 let scannerRunning = false;
 
@@ -9,6 +11,7 @@ const startBtn = document.getElementById("startCamera");
 const stopBtn = document.getElementById("stopCamera");
 
 const barcodeResult = document.getElementById("barcodeResult");
+const barcodeInput = document.getElementById("barcode");
 const skuInput = document.getElementById("sku");
 
 // -------------------------
@@ -23,28 +26,52 @@ async function loadCameras() {
         const devices = await codeReader.listVideoInputDevices();
 
         if (devices.length === 0) {
+
             alert("No camera found.");
             return false;
+
         }
 
-        const backCamera = devices.find(device =>
-            device.label.toLowerCase().includes("back")
-        );
+        cameraSelect.innerHTML = "";
 
-        selectedDeviceId = backCamera
-            ? backCamera.deviceId
-            : devices[0].deviceId;
+        devices.forEach((device, index) => {
+
+            const option = document.createElement("option");
+
+            option.value = device.deviceId;
+
+            option.text =
+                device.label || `Camera ${index + 1}`;
+
+            cameraSelect.appendChild(option);
+
+        });
+
+        selectedDeviceId = devices[0].deviceId;
+
+        cameraSelect.value = selectedDeviceId;
 
         return true;
 
     } catch (err) {
 
         console.error(err);
+
         alert("Unable to access camera.");
 
         return false;
+
     }
+
 }
+
+cameraSelect.addEventListener("change", function () {
+
+    selectedDeviceId = this.value;
+
+    startScanner();
+
+});
 
 // -------------------------
 // Lookup Product
@@ -117,17 +144,13 @@ async function lookupProduct(barcode) {
 // -------------------------
 // Start Scanner
 // -------------------------
-startBtn.addEventListener("click", async () => {
 
-    if (scannerRunning) return;
+async function startScanner() {
 
-    const success = await loadCameras();
-
-    if (!success) return;
+    if (scannerRunning)
+        stopScanner();
 
     scannerRunning = true;
-
-    console.log("Starting scanner...");
 
     codeReader.decodeOnceFromVideoDevice(
         selectedDeviceId,
@@ -135,31 +158,34 @@ startBtn.addEventListener("click", async () => {
     )
     .then(result => {
 
-    const barcode = result.getText();
+        const barcode = result.getText();
 
-    console.log("Scanned:", barcode);
+        barcodeResult.value = barcode;
+        barcodeInput.value = barcode;
 
-    barcodeResult.value = barcode;
-    skuInput.value = barcode;
+        lookupProduct(barcode);
 
-    lookupProduct(barcode);
+        // Automatically start scanning again
+        scannerRunning = false;
+        startScanner();
 
     })
-    
     .catch(err => {
+
+        scannerRunning = false;
 
         console.error(err);
 
     });
 
-});
+}
 
 // -------------------------
 // Manual Barcode Entry
 // -------------------------
-skuInput.addEventListener("change", function () {
+barcodeInput.addEventListener("change", function () {
 
-    const barcode = skuInput.value.trim();
+    const barcode = barcodeInput.value.trim();
 
     if (barcode !== "") {
 
@@ -174,7 +200,8 @@ skuInput.addEventListener("change", function () {
 // -------------------------
 function stopScanner() {
 
-    if (!scannerRunning) return;
+    if (!scannerRunning)
+        return;
 
     codeReader.reset();
 
@@ -203,5 +230,18 @@ document.getElementById("clearForm").addEventListener("click", function () {
 
     // Reset category to first option
     document.getElementById("category").selectedIndex = 0;
+
+});
+
+// Load available cameras when the page opens
+window.addEventListener("DOMContentLoaded", async () => {
+
+    const success = await loadCameras();
+
+    if (success) {
+
+        startScanner();
+
+    }
 
 });

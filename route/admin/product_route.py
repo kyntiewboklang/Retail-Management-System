@@ -25,8 +25,8 @@ def register_product_routes(app):
             price = request.form["price"]
             quantity = request.form["quantity"]
             sku = request.form["sku"]
+            barcode = request.form["barcode"]
             supplier = request.form["supplier"]
-            description = request.form["description"]
             
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -41,8 +41,8 @@ def register_product_routes(app):
                     price,
                     quantity,
                     sku,
-                    supplier,
-                    description
+                    barcode,
+                    supplier
                 )
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)
             """,
@@ -54,8 +54,8 @@ def register_product_routes(app):
                 price,
                 quantity,
                 sku,
-                supplier,
-                description
+                barcode,
+                supplier
             ))
 
             conn.commit()
@@ -137,7 +137,6 @@ def register_product_routes(app):
                 price,
                 quantity,
                 supplier,
-                description
             FROM products
             WHERE user_id = %s
             AND sku = %s
@@ -161,7 +160,6 @@ def register_product_routes(app):
                 "price": product[3],
                 "quantity": product[4],
                 "supplier": product[5],
-                "description": product[6]
             })
 
         # Search Open Food Facts
@@ -188,8 +186,7 @@ def register_product_routes(app):
                         "brand": p.get("brands", ""),
                         "price": "",
                         "quantity": 0,
-                        "supplier": "",
-                        "description": p.get("generic_name", "")
+                        "supplier": ""
                     })
 
         except Exception as e:

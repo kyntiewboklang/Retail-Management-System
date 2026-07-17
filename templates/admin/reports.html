@@ -1,0 +1,461 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+<div class="container-fluid py-4">
+<div class="text-center mb-4">
+
+    <h2 class="fw-bold">
+        <i class="bi bi-bar-chart-fill text-primary"></i>
+        Reports Dashboard
+    </h2>
+
+    <p class="text-muted">
+        Sales and Inventory Analytics
+    </p>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form method="GET" class="row g-3 align-items-end">
+
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    name="start"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label class="form-label">
+                    End Date
+                </label>
+
+                <input
+                    type="date"
+                    name="end"
+                    class="form-control">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button class="btn btn-primary w-100">
+
+                    <i class="bi bi-funnel-fill"></i>
+
+                    Filter
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+
+                    Sales This Week
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="salesChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+
+                    Payment Methods
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="paymentChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h6>Total Revenue</h6>
+
+                <h3>₹{{ total_sales }}</h3>
+
+            </div>
+        </div>
+    </div>
+
+   <div class="col-lg-3 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h6>Total Orders</h6>
+
+                <h3>{{ total_orders }}</h3>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h6>Products Sold</h6>
+
+                <h3>{{ products_sold }}</h3>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h6>Low Stock</h6>
+
+                <h3>{{ low_stock }}</h3>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card mt-4 shadow-sm">
+
+    <div class="card-header">
+
+        <h5>Recent Orders</h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-striped">
+
+            <thead>
+
+                <tr>
+
+                    <th>Invoice</th>
+                    <th>Staff</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for order in recent_orders %}
+
+                <tr>
+
+                    <td>#{{ order[0] }}</td>
+
+                    <td>{{ order[1] }}</td>
+
+                    <td>₹{{ order[2] }}</td>
+
+                    <td>{{ order[3] }}</td>
+
+                    <td>{{ order[4] }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card mt-4 shadow-sm">
+
+    <div class="card-header">
+
+        <h5>Top Selling Products</h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Product</th>
+
+                    <th>Sold</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for p in top_products %}
+
+                <tr>
+
+                    <td>{{ p[0] }}</td>
+
+                    <td>{{ p[1] }}</td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card mt-4 shadow-sm">
+
+    <div class="card-header">
+
+        <h5>Staff Performance</h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Staff</th>
+
+                <th>Orders</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for s in staff_report %}
+
+            <tr>
+
+                <td>{{ s[0] }}</td>
+
+                <td>{{ s[1] }}</td>
+
+                <td>₹{{ s[2] }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="card mt-4 shadow-sm">
+
+<div class="card-header">
+
+<h5>Low Stock Products</h5>
+
+</div>
+
+    <div class="card-body">
+
+    <table class="table">
+
+    <thead>
+
+        <tr>
+
+            <th>Product</th>
+
+            <th>Remaining</th>
+
+            <th>Status</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for p in low_stock_products %}
+
+        <tr>
+
+            <td>{{ p[0] }}</td>
+
+            <td>{{ p[1] }}</td>
+
+            <td>
+
+                <span class="badge bg-danger">
+
+                    Low Stock
+
+                </span>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    </div>
+
+</div>
+
+<div class="col-md-2">
+
+    <button
+        type="button"
+        onclick="window.print()"
+        class="btn btn-success w-100">
+
+        <i class="bi bi-printer"></i>
+
+        Print
+
+    </button>
+
+</div>
+
+<a
+href="/admin/report/pdf"
+
+class="btn btn-danger w-100">
+
+<i class="bi bi-file-earmark-pdf"></i>
+
+Download PDF
+
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx=document.getElementById("salesChart");
+
+new Chart(ctx,{
+
+type:"bar",
+
+data:{
+
+labels:{{ labels|tojson }},
+
+datasets:[{
+
+label:"Sales",
+
+data:{{ sales|tojson }}
+
+}]
+
+}
+
+});
+
+</script>
+
+<script>
+
+new Chart(
+
+document.getElementById("paymentChart"),
+
+{
+
+type:"pie",
+
+data:{
+
+labels:{{ payment_labels|tojson }},
+
+datasets:[{
+
+data:{{ payment_values|tojson }}
+
+}]
+
+}
+
+});
+
+</script>
+</div>
+
+{% endblock %}

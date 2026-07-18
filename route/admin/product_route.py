@@ -136,10 +136,10 @@ def register_product_routes(app):
                 brand,
                 price,
                 quantity,
-                supplier,
+                supplier
             FROM products
             WHERE user_id = %s
-            AND sku = %s
+            AND barcode = %s
         """, (
             session["user_id"],
             barcode

@@ -13,13 +13,13 @@ function searchProducts() {
 
     rows.forEach(row => {
 
-        const sku = row.cells[0].innerText.toLowerCase();
+        const barcode = row.cells[0].innerText.toLowerCase();
         const product = row.cells[1].innerText.toLowerCase();
         const category = row.cells[2].innerText.toLowerCase();
         const brand = row.cells[3].innerText.toLowerCase();
 
         const matchesSearch =
-            sku.includes(searchText) ||
+            barcode.includes(searchText) ||
             product.includes(searchText) ||
             category.includes(searchText) ||
             brand.includes(searchText);

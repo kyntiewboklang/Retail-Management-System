@@ -1,461 +1,187 @@
 {% extends "admin/base.html" %}
+
+{% block styles %}
+<link rel="stylesheet"
+          href="{{ url_for('static', filename='css/report.css') }}">
+{% endblock %}
+
 {% block content %}
 
-<div class="container-fluid py-4">
-<div class="text-center mb-4">
 
-    <h2 class="fw-bold">
-        <i class="bi bi-bar-chart-fill text-primary"></i>
-        Reports Dashboard
-    </h2>
+<div class="reports-wrap">
 
-    <p class="text-muted">
-        Sales and Inventory Analytics
-    </p>
-
-</div>
-
-<div class="card shadow-sm mb-4">
-
-    <div class="card-body">
-
-        <form method="GET" class="row g-3 align-items-end">
-
-            <div class="col-md-4">
-
-                <label class="form-label">
-                    Start Date
-                </label>
-
-                <input
-                    type="date"
-                    name="start"
-                    class="form-control">
-
-            </div>
-
-            <div class="col-md-4">
-
-                <label class="form-label">
-                    End Date
-                </label>
-
-                <input
-                    type="date"
-                    name="end"
-                    class="form-control">
-
-            </div>
-
-            <div class="col-md-2">
-
-                <button class="btn btn-primary w-100">
-
-                    <i class="bi bi-funnel-fill"></i>
-
-                    Filter
-
-                </button>
-
-            </div>
-
-        </form>
-
+  <div class="reports-header">
+    <div>
+      <div class="eyebrow">Analytics</div>
+      <h2><i class="bi bi-bar-chart-fill"></i> Reports Dashboard</h2>
+      <p>Sales and inventory performance overview</p>
     </div>
+    <div class="header-actions">
+      <button type="button" onclick="window.print()" class="btn-quiet">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      <a href="/admin/report/pdf" class="btn-solid">
+        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+      </a>
+    </div>
+  </div>
 
-</div>
-
-<div class="row g-4 mb-4">
-
-    <div class="col-lg-8">
-
-        <div class="card shadow-sm h-100">
-
-            <div class="card-header">
-
-                <h5 class="mb-0">
-
-                    Sales This Week
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="salesChart"></canvas>
-
-            </div>
-
+  <div class="filter-bar">
+    <form method="GET">
+        <div class="filter-field">
+            <label>Start date</label>
+            <input type="date" name="start" value="{{ request.args.get('start','') }}">
         </div>
 
-    </div>
-
-    <div class="col-lg-4">
-
-        <div class="card shadow-sm h-100">
-
-            <div class="card-header">
-
-                <h5 class="mb-0">
-
-                    Payment Methods
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <canvas id="paymentChart"></canvas>
-
-            </div>
-
+        <div class="filter-field">
+            <label>End date</label>
+            <input type="date" name="end" value="{{ request.args.get('end','') }}">
         </div>
 
-    </div>
-
+        <div class="filter-field">
+            <button type="submit" class="btn-solid" style="border:none;">
+                <i class="bi bi-funnel-fill"></i> Apply Filter
+            </button>
+        </div>
+    </form>
 </div>
 
-<div class="row g-4 mb-4">
-
-    <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                <h6>Total Revenue</h6>
-
-                <h3>₹{{ total_sales }}</h3>
-
-            </div>
-        </div>
+  <div class="stat-grid">
+    <div class="stat-card" style="--accent:#0f6e66; --accent-bg:#e3f1ef;">
+      <div class="stat-top">
+        <span class="stat-label">Total Revenue</span>
+        <span class="stat-icon"><i class="bi bi-currency-rupee"></i></span>
+      </div>
+      <div class="stat-value">₹{{ total_sales }}</div>
     </div>
 
-   <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                <h6>Total Orders</h6>
-
-                <h3>{{ total_orders }}</h3>
-
-            </div>
-        </div>
+    <div class="stat-card" style="--accent:#2f5fb0; --accent-bg:#e6edf9;">
+      <div class="stat-top">
+        <span class="stat-label">Total Orders</span>
+        <span class="stat-icon"><i class="bi bi-receipt"></i></span>
+      </div>
+      <div class="stat-value">{{ total_orders }}</div>
     </div>
 
-    <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                <h6>Products Sold</h6>
-
-                <h3>{{ products_sold }}</h3>
-
-            </div>
-        </div>
+    <div class="stat-card" style="--accent:#7c5cbf; --accent-bg:#efe9f9;">
+      <div class="stat-top">
+        <span class="stat-label">Products Sold</span>
+        <span class="stat-icon"><i class="bi bi-box-seam"></i></span>
+      </div>
+      <div class="stat-value">{{ products_sold }}</div>
     </div>
 
-    <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                <h6>Low Stock</h6>
-
-                <h3>{{ low_stock }}</h3>
-
-            </div>
-        </div>
+    <div class="stat-card" style="--accent:#b5680a; --accent-bg:#fbeed9;">
+      <div class="stat-top">
+        <span class="stat-label">Low Stock</span>
+        <span class="stat-icon"><i class="bi bi-exclamation-triangle"></i></span>
+      </div>
+      <div class="stat-value">{{ low_stock }}</div>
     </div>
+  </div>
 
-</div>
-
-<div class="card mt-4 shadow-sm">
-
-    <div class="card-header">
-
-        <h5>Recent Orders</h5>
-
+  <div class="chart-row">
+    <div class="panel">
+      <div class="panel-header"><h5>Sales This Week</h5></div>
+      <div class="panel-body"><canvas id="salesChart"></canvas></div>
     </div>
-
-    <div class="card-body">
-
-        <table class="table table-striped">
-
-            <thead>
-
-                <tr>
-
-                    <th>Invoice</th>
-                    <th>Staff</th>
-                    <th>Amount</th>
-                    <th>Payment</th>
-                    <th>Date</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-            {% for order in recent_orders %}
-
-                <tr>
-
-                    <td>#{{ order[0] }}</td>
-
-                    <td>{{ order[1] }}</td>
-
-                    <td>₹{{ order[2] }}</td>
-
-                    <td>{{ order[3] }}</td>
-
-                    <td>{{ order[4] }}</td>
-
-                </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
+    <div class="panel">
+      <div class="panel-header"><h5>Payment Methods</h5></div>
+      <div class="panel-body"><canvas id="paymentChart"></canvas></div>
     </div>
+  </div>
 
-</div>
-
-<div class="card mt-4 shadow-sm">
-
-    <div class="card-header">
-
-        <h5>Top Selling Products</h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <table class="table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Product</th>
-
-                    <th>Sold</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-            {% for p in top_products %}
-
-                <tr>
-
-                    <td>{{ p[0] }}</td>
-
-                    <td>{{ p[1] }}</td>
-
-                </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-<div class="card mt-4 shadow-sm">
-
-    <div class="card-header">
-
-        <h5>Staff Performance</h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <table class="table">
-
+  <div class="panel">
+    <div class="panel-header"><h5>Recent Orders</h5></div>
+    <div class="panel-body" style="padding:0;">
+      <table class="clean-table">
         <thead>
-
-            <tr>
-
-                <th>Staff</th>
-
-                <th>Orders</th>
-
-                <th>Revenue</th>
-
-            </tr>
-
+          <tr><th>Invoice</th><th>Staff</th><th>Amount</th><th>Payment</th><th>Date</th></tr>
         </thead>
-
         <tbody>
-
-            {% for s in staff_report %}
-
-            <tr>
-
-                <td>{{ s[0] }}</td>
-
-                <td>{{ s[1] }}</td>
-
-                <td>₹{{ s[2] }}</td>
-
-            </tr>
-
-            {% endfor %}
-
+          {% for order in recent_orders %}
+          <tr>
+            <td class="muted">#{{ order[0] }}</td>
+            <td>{{ order[1] }}</td>
+            <td class="num">₹{{ order[2] }}</td>
+            <td><span class="pill pill-neutral">{{ order[3] }}</span></td>
+            <td class="muted">{{ order[4] }}</td>
+          </tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="5">No orders in this period</td></tr>
+          {% endfor %}
         </tbody>
-
-        </table>
-
+      </table>
     </div>
+  </div>
 
-</div>
+  <div class="panel">
+    <div class="panel-header"><h5>Top Selling Products</h5></div>
+    <div class="panel-body" style="padding:0;">
+      <table class="clean-table">
+        <thead><tr><th>Product</th><th>Units Sold</th></tr></thead>
+        <tbody>
+          {% for p in top_products %}
+          <tr><td>{{ p[0] }}</td><td class="num">{{ p[1] }}</td></tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="2">No sales data available</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-<div class="card mt-4 shadow-sm">
+  <div class="panel">
+    <div class="panel-header"><h5>Staff Performance</h5></div>
+    <div class="panel-body" style="padding:0;">
+      <table class="clean-table">
+        <thead><tr><th>Staff</th><th>Orders</th><th>Revenue</th></tr></thead>
+        <tbody>
+          {% for s in staff_report %}
+          <tr><td>{{ s[0] }}</td><td class="num">{{ s[1] }}</td><td class="num">₹{{ s[2] }}</td></tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="3">No staff activity recorded</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-<div class="card-header">
-
-<h5>Low Stock Products</h5>
-
-</div>
-
-    <div class="card-body">
-
-    <table class="table">
-
-    <thead>
-
-        <tr>
-
-            <th>Product</th>
-
-            <th>Remaining</th>
-
-            <th>Status</th>
-
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        {% for p in low_stock_products %}
-
-        <tr>
-
+  <div class="panel">
+    <div class="panel-header">
+      <h5>Low Stock Products</h5>
+      <span class="count-pill">{{ low_stock_products|length }} item(s)</span>
+    </div>
+    <div class="panel-body" style="padding:0;">
+      <table class="clean-table">
+        <thead><tr><th>Product</th><th>Remaining</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in low_stock_products %}
+          <tr>
             <td>{{ p[0] }}</td>
-
-            <td>{{ p[1] }}</td>
-
-            <td>
-
-                <span class="badge bg-danger">
-
-                    Low Stock
-
-                </span>
-
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
+            <td class="num">{{ p[1] }}</td>
+            <td><span class="pill pill-red">Low Stock</span></td>
+          </tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="3">All products are well stocked</td></tr>
+          {% endfor %}
         </tbody>
-
-    </table>
-
+      </table>
     </div>
+  </div>
 
 </div>
 
-<div class="col-md-2">
-
-    <button
-        type="button"
-        onclick="window.print()"
-        class="btn btn-success w-100">
-
-        <i class="bi bi-printer"></i>
-
-        Print
-
-    </button>
-
-</div>
-
-<a
-href="/admin/report/pdf"
-
-class="btn btn-danger w-100">
-
-<i class="bi bi-file-earmark-pdf"></i>
-
-Download PDF
-
-</a>
+<script>
+window.chartData = {
+    labels: {{ labels|tojson }},
+    sales: {{ sales|tojson }},
+    paymentLabels: {{ payment_labels|tojson }},
+    paymentValues: {{ payment_values|tojson }}
+};
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-
-const ctx=document.getElementById("salesChart");
-
-new Chart(ctx,{
-
-type:"bar",
-
-data:{
-
-labels:{{ labels|tojson }},
-
-datasets:[{
-
-label:"Sales",
-
-data:{{ sales|tojson }}
-
-}]
-
-}
-
-});
-
-</script>
-
-<script>
-
-new Chart(
-
-document.getElementById("paymentChart"),
-
-{
-
-type:"pie",
-
-data:{
-
-labels:{{ payment_labels|tojson }},
-
-datasets:[{
-
-data:{{ payment_values|tojson }}
-
-}]
-
-}
-
-});
-
-</script>
-</div>
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
 
 {% endblock %}

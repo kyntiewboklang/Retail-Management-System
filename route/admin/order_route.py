@@ -54,12 +54,29 @@ def register_order_routes(app):
 
         order_id = cursor.fetchone()[0]
 
+        cursor.execute("""
+            INSERT INTO sales
+            (
+                staff_id,
+                payment_method,
+                total
+            )
+            VALUES (%s, %s, %s)
+            RETURNING id
+        """, (
+            session["user_id"],
+            payment_method,
+            total_amount
+        ))
+
+        sale_id = cursor.fetchone()[0]
+
         for item in items:
 
             cursor.execute("""
                 SELECT id, quantity
                 FROM products
-                WHERE sku = %s
+                WHERE barcode = %s
                 AND user_id = %s
             """, (
                 item["barcode"],
@@ -114,6 +131,22 @@ def register_order_routes(app):
                 item["quantity"],
                 item["price"],
                 subtotal
+            ))
+
+            cursor.execute("""
+                INSERT INTO sale_items
+                (
+                    sale_id,
+                    product_id,
+                    quantity,
+                    price
+                )
+                VALUES (%s, %s, %s, %s)
+            """, (
+                sale_id,
+                product_id,
+                item["quantity"],
+                item["price"]
             ))
 
             cursor.execute("""

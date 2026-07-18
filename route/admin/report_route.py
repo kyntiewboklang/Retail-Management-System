@@ -1,45 +1,70 @@
 #For report making
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from flask import send_file
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer
+)
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-import os
-
-from flask import (
-    render_template,
-    redirect,
-    session,
-    url_for,
-    request,
-    jsonify
-)
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.units import inch
+from datetime import datetime
 from database import get_db_connection
 
 def report_route(app):
     @app.route("/admin/reports")
     def reports():
 
+        start = request.args.get("start")
+        end = request.args.get("end")
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
         # Total Revenue
-        cursor.execute("""
-            SELECT COALESCE(SUM(total),0)
-            FROM sales
-        """)
+        if start and end:
+            cursor.execute("""
+                SELECT COALESCE(SUM(total),0)
+                FROM sales
+                WHERE DATE(created_at) BETWEEN %s AND %s
+            """, (start, end))
+        else:
+            cursor.execute("""
+                SELECT COALESCE(SUM(total),0)
+                FROM sales
+            """)
         total_sales = cursor.fetchone()[0]
 
         # Orders
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM sales
-        """)
+        if start and end:
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM sales
+                WHERE DATE(created_at) BETWEEN %s AND %s
+            """, (start, end))
+        else:
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM sales
+            """)
         total_orders = cursor.fetchone()[0]
 
         # Products Sold
-        cursor.execute("""
-            SELECT COALESCE(SUM(quantity),0)
-            FROM sale_items
-        """)
+        if start and end:
+            cursor.execute("""
+                SELECT COALESCE(SUM(si.quantity),0)
+                FROM sale_items si
+                JOIN sales s ON si.sale_id = s.id
+                WHERE DATE(s.created_at) BETWEEN %s AND %s
+            """, (start, end))
+        else:
+            cursor.execute("""
+                SELECT COALESCE(SUM(quantity),0)
+                FROM sale_items
+            """)
         products_sold = cursor.fetchone()[0]
 
         # Low Stock
@@ -51,20 +76,35 @@ def report_route(app):
         low_stock = cursor.fetchone()[0]
 
         # Recent Orders
-        cursor.execute("""
-            SELECT
-                s.id,
-                u.username,
-                s.total,
-                s.payment_method,
-                s.created_at
-            FROM sales s
-            JOIN users u
-            ON s.staff_id = u.id
-            ORDER BY s.created_at DESC
-            LIMIT 10
-        """)
-
+        if start and end:
+            cursor.execute("""
+                SELECT
+                    s.id,
+                    u.username,
+                    s.total,
+                    s.payment_method,
+                    s.created_at
+                FROM sales s
+                JOIN users u
+                    ON s.staff_id = u.id
+                WHERE DATE(s.created_at) BETWEEN %s AND %s
+                ORDER BY s.created_at DESC
+                LIMIT 10
+            """, (start, end))
+        else:
+            cursor.execute("""
+                SELECT
+                    s.id,
+                    u.username,
+                    s.total,
+                    s.payment_method,
+                    s.created_at
+                FROM sales s
+                JOIN users u
+                    ON s.staff_id = u.id
+                ORDER BY s.created_at DESC
+                LIMIT 10
+            """)
         recent_orders = cursor.fetchall()
 
         #Top Products
@@ -111,15 +151,26 @@ def report_route(app):
         low_stock_products=cursor.fetchall()
 
         #Bar Chart of the sale
-        cursor.execute("""
-            SELECT
-            DATE(created_at),
-            SUM(total)
-            FROM sales
-            WHERE created_at >= CURRENT_DATE - INTERVAL '6 days'
-            GROUP BY DATE(created_at)
-            ORDER BY DATE(created_at)
-        """)
+        if start and end:
+            cursor.execute("""
+                SELECT
+                    DATE(created_at),
+                    SUM(total)
+                FROM sales
+                WHERE DATE(created_at) BETWEEN %s AND %s
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at)
+            """, (start, end))
+        else:
+            cursor.execute("""
+                SELECT
+                    DATE(created_at),
+                    SUM(total)
+                FROM sales
+                WHERE created_at >= CURRENT_DATE - INTERVAL '6 days'
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at)
+            """)
 
         chart_data = cursor.fetchall()
 
@@ -170,53 +221,125 @@ def report_route(app):
     @app.route("/admin/report/pdf")
     def report_pdf():
 
-        filename = "sales_report.pdf"
-        doc = SimpleDocTemplate(filename)
-        styles = getSampleStyleSheet()
-        elements = []
-
-        elements.append(
-            Paragraph("<b>Retail Management Report</b>", styles["Title"])
-        )
-
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # Summary
+        cursor.execute("SELECT COALESCE(SUM(total),0) FROM sales")
+        total_sales = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM sales")
+        total_orders = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COALESCE(SUM(quantity),0) FROM sale_items")
+        total_products = cursor.fetchone()[0]
+
         cursor.execute("""
             SELECT
-            id,
-            total,
-            payment_method,
-            created_at
+                id,
+                total,
+                payment_method,
+                created_at
             FROM sales
             ORDER BY created_at DESC
         """)
 
-        rows = cursor.fetchall()
-        data = [["Invoice","Amount","Payment","Date"]]
-
-        for r in rows:
-            data.append([
-                r[0],
-                f"₹{r[1]}",
-                r[2],
-                str(r[3])
-            ])
-
-        table = Table(data)
-
-        table.setStyle(TableStyle([
-            ("BACKGROUND",(0,0),(-1,0),colors.grey),
-            ("TEXTCOLOR",(0,0),(-1,0),colors.white),
-            ("GRID",(0,0),(-1,-1),1,colors.black),
-            ("BACKGROUND",(0,1),(-1,-1),colors.beige)
-        ]))
-
-        elements.append(table)
-        doc.build(elements)
+        sales = cursor.fetchall()
 
         cursor.close()
         conn.close()
+
+        filename = "Sales_Report.pdf"
+
+        doc = SimpleDocTemplate(
+            filename,
+            rightMargin=30,
+            leftMargin=30,
+            topMargin=30,
+            bottomMargin=30
+        )
+
+        styles = getSampleStyleSheet()
+
+        title = styles["Title"]
+        title.alignment = TA_CENTER
+
+        heading = styles["Heading2"]
+
+        normal = styles["BodyText"]
+
+        elements = []
+
+        elements.append(
+            Paragraph("Retail Management System", title)
+        )
+
+        elements.append(
+            Paragraph("Sales Report", heading)
+        )
+
+        elements.append(
+            Paragraph(
+                f"Generated on: {datetime.now().strftime('%d %B %Y %I:%M %p')}",
+                normal
+            )
+        )
+
+        elements.append(Spacer(1, 0.3 * inch))
+
+        summary = [
+            ["Total Revenue", f"₹ {total_sales:,.2f}"],
+            ["Total Orders", total_orders],
+            ["Products Sold", total_products]
+        ]
+
+        summary_table = Table(summary, colWidths=[220,150])
+
+        summary_table.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(-1,-1),colors.whitesmoke),
+            ("GRID",(0,0),(-1,-1),1,colors.grey),
+            ("FONTNAME",(0,0),(-1,-1),"Helvetica-Bold"),
+            ("BOTTOMPADDING",(0,0),(-1,-1),8)
+        ]))
+
+        elements.append(summary_table)
+
+        elements.append(Spacer(1,0.4*inch))
+
+        elements.append(
+            Paragraph("Sales Details", heading)
+        )
+
+        table_data = [[
+            "Invoice",
+            "Amount",
+            "Payment",
+            "Date"
+        ]]
+
+        for sale in sales:
+            table_data.append([
+                sale[0],
+                f"₹ {sale[1]}",
+                sale[2],
+                sale[3].strftime("%d-%m-%Y")
+            ])
+
+        table = Table(table_data)
+
+        table.setStyle(TableStyle([
+            ("BACKGROUND",(0,0),(-1,0),colors.darkblue),
+            ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+            ("FONTNAME",(0,0),(-1,0),"Helvetica-Bold"),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+            ("GRID",(0,0),(-1,-1),0.5,colors.black),
+            ("BACKGROUND",(0,1),(-1,-1),colors.beige),
+            ("BOTTOMPADDING",(0,0),(-1,0),10)
+        ]))
+
+        elements.append(table)
+
+        doc.build(elements)
 
         return send_file(
             filename,

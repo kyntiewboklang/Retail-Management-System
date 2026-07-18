@@ -1,5 +1,5 @@
 #For report making
-from flask import send_file
+from flask import send_file, request,render_template
 from reportlab.platypus import (
     SimpleDocTemplate,
     Table,

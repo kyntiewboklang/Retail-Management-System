@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash
 from database import get_db_connection
 
 
-def register_staff_routes(app):
+def register_staff_routes(app, mail):
 
     @app.route("/admin/staff")
     def staff():

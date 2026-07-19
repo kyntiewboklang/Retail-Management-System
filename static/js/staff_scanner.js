@@ -214,9 +214,13 @@ function completeOrder() {
 
     .then(data => {
 
+        console.log(data);
+
         alert(data.message);
 
         if (data.success) {
+
+            window.location.href = "/staff/receipt/" + data.sale_id;
 
             cart = {};
 
@@ -308,18 +312,26 @@ document.getElementById("completeOrder").addEventListener("click", function comp
 
     .then(data => {
 
-        alert(data.message);
+        console.log("JSON:", data);
 
-        if(data.success){
+        if (data.success) {
 
-            cart = {};
+            alert(data.message);
 
-            renderCart();
+            window.location.href = "/staff/receipt/" + data.sale_id;
+            
+            //window.location.href = "/staff/receipt/" + data.sale_id;
+            //above is the code to to open the tab on the same page
+            // OR, if you prefer a new tab:
+            // window.open("/staff/receipt/" + data.sale_id, "_blank");
+
+        } else {
+
+            alert(data.message);
 
         }
 
     })
-
     .catch(err => {
 
         console.error(err);

@@ -4,11 +4,12 @@ from flask import (
     session,
     url_for,
     request,
-    jsonify
+    jsonify,
+    flash
 )
 from database import get_db_connection
 
-def register_staff_dashboard_route(app):
+def register_staff_dashboard_route(app, mail):
 
     @app.route("/staff/staff_dashboard")
     def staff_dashboard():
@@ -78,28 +79,7 @@ def register_staff_dashboard_route(app):
 
         )
 
-    @app.route("/staff/staff_products")
-    def staff_products():
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT *
-            FROM products
-            ORDER BY id DESC
-        """)
-
-        products = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return render_template(
-            "staff/staff_products.html",
-            products=products
-        )
-
-    @app.route("/staff/partials/staff_view_products")
+    @app.route("/staff/staff_view_products")
     def staff_view_products():
 
         conn = get_db_connection()
@@ -124,7 +104,7 @@ def register_staff_dashboard_route(app):
         conn.close()
 
         return render_template(
-            "/staff/partials/staff_view_products.html",
+            "/staff/staff_view_products.html",
             products=products
         )
 
@@ -268,7 +248,9 @@ def register_staff_dashboard_route(app):
 
                 "success": True,
 
-                "message": "Order completed successfully."
+                "message": "Order completed successfully.",
+
+                "sale_id": sale_id
 
             })
 
@@ -288,3 +270,168 @@ def register_staff_dashboard_route(app):
 
             cursor.close()
             conn.close()
+
+    @app.route("/staff/receipt/<int:sale_id>")
+    def receipt(sale_id):
+
+        if "staff_id" not in session:
+            return redirect(url_for("staff_login"))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Sale details
+        cursor.execute("""
+            SELECT
+                id,
+                staff_id,
+                payment_method,
+                total,
+                created_at
+            FROM sales
+            WHERE id = %s
+        """, (sale_id,))
+
+        sale = cursor.fetchone()
+
+        if not sale:
+
+            cursor.close()
+            conn.close()
+
+            return "Receipt not found", 404
+
+        # Staff details
+        cursor.execute("""
+            SELECT
+                username,
+                email
+            FROM staff
+            WHERE id = %s
+        """, (sale[1],))
+
+        staff = cursor.fetchone()
+
+        # Products in this sale
+        cursor.execute("""
+            SELECT
+                p.product_name,
+                si.quantity,
+                si.price
+            FROM sale_items si
+            INNER JOIN products p
+                ON si.product_id = p.id
+            WHERE si.sale_id = %s
+        """, (sale_id,))
+
+        rows = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        sale_data = {
+            "id": sale[0],
+            "staff_id": sale[1],
+            "payment_method": sale[2],
+            "total": sale[3],
+            "created_at": sale[4]
+        }
+
+        staff_data = {
+            "username": staff[0],
+            "email": staff[1]
+        }
+
+        items = []
+
+        for row in rows:
+
+            items.append({
+
+                "product_name": row[0],
+                "quantity": row[1],
+                "price": row[2]
+
+            })
+
+        return render_template(
+
+            "staff/receipt.html",
+
+            sale=sale_data,
+
+            staff=staff_data,
+
+            items=items
+
+        )
+
+    @app.route("/staff/staff_change_password", methods=["GET", "POST"])
+    def staff_change_password():
+
+        if "staff_id" not in session:
+            return redirect(url_for("staff_login"))
+
+        if request.method == "POST":
+
+            current_password = request.form["current_password"]
+            new_password = request.form["new_password"]
+            confirm_password = request.form["confirm_password"]
+
+            if new_password != confirm_password:
+                flash("New passwords do not match.", "danger")
+                return redirect(url_for("staff_change_password"))
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            # Get current password
+            cursor.execute("""
+                SELECT password
+                FROM staff
+                WHERE id = %s
+            """, (session["staff_id"],))
+
+            staff = cursor.fetchone()
+
+            if not staff:
+                cursor.close()
+                conn.close()
+
+                flash("Staff account not found.", "danger")
+                return redirect(url_for("staff_login"))
+
+            # Verify current password
+            if not check_password_hash(staff[0], current_password):
+
+                cursor.close()
+                conn.close()
+
+                flash("Current password is incorrect.", "danger")
+                return redirect(url_for("staff_change_password"))
+
+            # Hash new password
+            hashed_password = generate_password_hash(new_password)
+
+            # Update password
+            cursor.execute("""
+                UPDATE staff
+                SET password = %s
+                WHERE id = %s
+            """, (
+
+                hashed_password,
+                session["staff_id"]
+
+            ))
+
+            conn.commit()
+
+            cursor.close()
+            conn.close()
+
+            flash("Password changed successfully!", "success")
+
+            return redirect(url_for("staff_dashboard"))
+
+        return render_template("staff/staff_change_password.html")

@@ -1,11 +1,13 @@
-from flask import render_template, request, redirect, flash, session
+from flask import render_template, request, redirect, flash, session, url_for
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
 import secrets
 from database import get_db_connection
+from utils.auth import admin_required
 
 def recruitment_route(app, mail):
     @app.route("/admin/job_vacancies")
+    @admin_required
     def job_vacancies():
 
         conn = get_db_connection()
@@ -28,6 +30,7 @@ def recruitment_route(app, mail):
         )
 
     @app.route("/admin/add_vacancy", methods=["POST"])
+    @admin_required
     def add_vacancy():
 
         conn = get_db_connection()
@@ -55,7 +58,53 @@ def recruitment_route(app, mail):
 
         return redirect("/admin/job_vacancies")
 
+    @app.route("/admin/delete_vacancy/<int:id>", methods=["POST"])
+    @admin_required
+    def delete_vacancy(id):
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if there are applications
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM job_applications
+            WHERE vacancy_id = %s
+        """, (id,))
+
+        count = cursor.fetchone()[0]
+
+        if count > 0:
+
+            flash(
+                "This vacancy has applicants. It has been closed instead of deleted.",
+                "warning"
+            )
+
+            cursor.execute("""
+                UPDATE job_vacancies
+                SET status='Closed'
+                WHERE id=%s
+            """, (id,))
+
+        else:
+
+            cursor.execute("""
+                DELETE FROM job_vacancies
+                WHERE id=%s
+            """, (id,))
+
+            flash("Vacancy deleted successfully.", "success")
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("job_vacancies"))
+
     @app.route("/admin/applications")
+    @admin_required
     def applications():
 
         conn = get_db_connection()
@@ -134,6 +183,7 @@ def recruitment_route(app, mail):
         )
 
     @app.route("/admin/application/<int:application_id>")
+    @admin_required
     def review_application(application_id):
 
         conn = get_db_connection()
@@ -178,6 +228,7 @@ def recruitment_route(app, mail):
         )
 
     @app.route("/admin/interviews")
+    @admin_required
     def interviews():
 
         conn = get_db_connection()
@@ -222,6 +273,7 @@ def recruitment_route(app, mail):
         )
 
     @app.route("/admin/schedule_interview/<int:application_id>")
+    @admin_required
     def schedule_interview(application_id):
 
         conn = get_db_connection()
@@ -266,6 +318,7 @@ def recruitment_route(app, mail):
         )
 
     @app.route("/admin/save_interview", methods=["POST"])
+    @admin_required
     def save_interview():
 
         application_id = request.form["application_id"]
@@ -317,6 +370,7 @@ def recruitment_route(app, mail):
         return redirect("/admin/interviews")
 
     @app.route("/admin/hire/<int:application_id>", methods=["POST"])
+    @admin_required
     def hire_applicant(application_id):
 
         conn = get_db_connection()
@@ -324,7 +378,11 @@ def recruitment_route(app, mail):
 
         # Get applicant details
         cursor.execute("""
-            SELECT full_name, email, phone
+            SELECT
+                full_name,
+                email,
+                phone,
+                vacancy_id
             FROM job_applications
             WHERE id = %s
         """, (application_id,))
@@ -340,6 +398,7 @@ def recruitment_route(app, mail):
         full_name = applicant[0]
         email = applicant[1]
         phone = applicant[2]
+        vacancy_id = applicant[3]
 
         # Check if staff account already exists
         cursor.execute("""
@@ -393,6 +452,22 @@ def recruitment_route(app, mail):
             WHERE id=%s
         """, (application_id,))
 
+        #Update Job Vacancies
+        cursor.execute("""
+            UPDATE job_vacancies
+            SET vacancies = vacancies - 1
+            WHERE id = %s
+            AND vacancies > 0
+        """, (vacancy_id,))
+
+        #Notify it that it is close
+        cursor.execute("""
+            UPDATE job_vacancies
+            SET status = 'Closed'
+            WHERE id = %s
+            AND vacancies = 0
+        """, (vacancy_id,))
+
         conn.commit()
 
         # Send Email
@@ -430,6 +505,7 @@ def recruitment_route(app, mail):
         return redirect(f"/admin/application/{application_id}")
 
     @app.route("/admin/reject/<int:application_id>", methods=["POST"])
+    @admin_required
     def reject_applicant(application_id):
 
         conn = get_db_connection()

@@ -8,12 +8,21 @@ from flask import (
     session
 )
 
+#Generate the barcode image using python-barcode pillow library
+import os
+import barcode
+from barcode.writer import ImageWriter
+from flask import send_from_directory
+
 import requests
 
 from database import get_db_connection
 
+from utils.auth import admin_required
+
 def register_product_routes(app):
     @app.route("/admin/add_product", methods=["GET", "POST"])
+    @admin_required
     def add_product():
         if "user_id" not in session:
             return redirect(url_for("admin_login"))
@@ -68,8 +77,29 @@ def register_product_routes(app):
             return redirect(url_for("add_product"))
 
         return render_template("admin/add_product.html")
+
+    @app.route("/generate_barcode/<barcode_number>")
+    @admin_required
+    def generate_barcode(barcode_number):
+
+        folder = os.path.join("static", "barcodes")
+
+        os.makedirs(folder, exist_ok=True)
+
+        filename = os.path.join(folder, barcode_number)
+
+        ean = barcode.get(
+            "ean13",
+            barcode_number,
+            writer=ImageWriter()
+        )
+
+        ean.save(filename)
+
+        return f"static/barcodes/{barcode_number}.png"
     
     @app.route("/admin/available_stock")
+    @admin_required
     def available_stock():
         if "user_id" not in session:
             return redirect(url_for("admin_login"))
@@ -122,6 +152,7 @@ def register_product_routes(app):
         )
     
     @app.route("/api/search_product/<barcode>")
+    @admin_required
     def search_product(barcode):
         if "user_id" not in session:
             return redirect(url_for("admin_login"))

@@ -1,9 +1,11 @@
 from flask import render_template, session, redirect, url_for
 from database import get_db_connection
+from utils.auth import admin_required
 
 def register_dashboard_routes(app):
 
     @app.route("/admin/dashboard")
+    @admin_required
     def dashboard():
 
         if "user_id" not in session:

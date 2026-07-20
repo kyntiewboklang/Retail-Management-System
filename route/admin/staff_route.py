@@ -12,10 +12,13 @@ from werkzeug.security import generate_password_hash
 
 from database import get_db_connection
 
+from utils.auth import admin_required
+
 
 def register_staff_routes(app, mail):
 
     @app.route("/admin/staff")
+    @admin_required
     def staff():
 
         if "user_id" not in session:
@@ -48,6 +51,7 @@ def register_staff_routes(app, mail):
 
 
     @app.route("/admin/add_staff", methods=["GET", "POST"])
+    @admin_required
     def addstaff():
 
         if "user_id" not in session:
@@ -140,6 +144,7 @@ def register_staff_routes(app, mail):
         return render_template("admin/add_staff.html")
     
     @app.route("/admin/delete_staff/<int:staff_id>")
+    @admin_required
     def delete_staff(staff_id):
 
         if "user_id" not in session:
@@ -164,6 +169,7 @@ def register_staff_routes(app, mail):
         return redirect("/admin/staff")
 
     @app.route("/admin/edit_staff/<int:staff_id>", methods=["GET", "POST"])
+    @admin_required
     def edit_staff(staff_id):
 
         if "user_id" not in session:

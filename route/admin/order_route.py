@@ -8,15 +8,19 @@ from flask import (
 )
 from database import get_db_connection
 
+from utils.auth import admin_required
+
 def register_order_routes(app):
 
     @app.route("/admin/new-orders")
+    @admin_required
     def new_orders():
         if "user_id" not in session:
             return redirect(url_for("admin_login"))
         return render_template("admin/new_orders.html")
 
     @app.route("/admin/complete-order", methods=["POST"])
+    @admin_required
     def complete_order():
         if "user_id" not in session:
             return redirect(url_for("admin_login"))

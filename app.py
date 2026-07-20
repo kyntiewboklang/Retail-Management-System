@@ -61,7 +61,10 @@ def careers():
     cursor.execute("""
         SELECT *
         FROM job_vacancies
-        WHERE status='Open'
+        WHERE
+            status = 'Open'
+            AND vacancies > 0
+            AND deadline >= CURRENT_DATE
         ORDER BY created_at DESC
     """)
 

@@ -7,11 +7,20 @@ from flask import (
     jsonify,
     flash
 )
+
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
 from database import get_db_connection
+
+from utils.auth import staff_required
 
 def register_staff_dashboard_route(app, mail):
 
     @app.route("/staff/staff_dashboard")
+    @staff_required
     def staff_dashboard():
 
         if "staff_id" not in session:
@@ -80,6 +89,7 @@ def register_staff_dashboard_route(app, mail):
         )
 
     @app.route("/staff/staff_view_products")
+    @staff_required
     def staff_view_products():
 
         conn = get_db_connection()
@@ -109,6 +119,7 @@ def register_staff_dashboard_route(app, mail):
         )
 
     @app.route("/staff/staff_new_orders")
+    @staff_required
     def staff_new_orders():
 
         barcode = request.args.get("barcode")
@@ -142,6 +153,7 @@ def register_staff_dashboard_route(app, mail):
         )
 
     @app.route("/staff/get_product", methods=["POST"])
+    @staff_required
     def get_product():
 
         data = request.get_json()
@@ -172,6 +184,7 @@ def register_staff_dashboard_route(app, mail):
         })
 
     @app.route("/staff/complete_order", methods=["POST"])
+    @staff_required
     def staff_complete_order():
 
         data = request.get_json()
@@ -272,6 +285,7 @@ def register_staff_dashboard_route(app, mail):
             conn.close()
 
     @app.route("/staff/receipt/<int:sale_id>")
+    @staff_required
     def receipt(sale_id):
 
         if "staff_id" not in session:
@@ -367,6 +381,7 @@ def register_staff_dashboard_route(app, mail):
         )
 
     @app.route("/staff/staff_change_password", methods=["GET", "POST"])
+    @staff_required
     def staff_change_password():
 
         if "staff_id" not in session:

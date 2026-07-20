@@ -13,9 +13,11 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.units import inch
 from datetime import datetime
 from database import get_db_connection
+from utils.auth import admin_required
 
 def report_route(app):
     @app.route("/admin/reports")
+    @admin_required
     def reports():
 
         start = request.args.get("start")
@@ -219,6 +221,7 @@ def report_route(app):
         )
 
     @app.route("/admin/report/pdf")
+    @admin_required
     def report_pdf():
 
         conn = get_db_connection()
